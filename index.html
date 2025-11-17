@@ -345,18 +345,18 @@ const backgrounds = [
 // Load saved background preference or default to 0 (Standard) - NOW GLOBAL
 let currentBgIndex = parseInt(localStorage.getItem('globalBackgroundIndex')) || 0;
 
-// Change background function with global sync
 function changeBackground(index) {
     currentBgIndex = index;
     document.body.style.backgroundImage = `url('${backgrounds[index]}')`;
     
-    // Save to global preference (shared across pages)
     localStorage.setItem('globalBackgroundIndex', index);
-    
-    // Update active button
+
     document.querySelectorAll('.bg-button').forEach((btn, i) => {
         btn.classList.toggle('active', i === index);
     });
+
+    // 🔹 sync new background choice
+    scheduleCloudSave();
 }
 
 // Initialize background on page load
