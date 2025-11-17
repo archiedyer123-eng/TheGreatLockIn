@@ -516,43 +516,40 @@ function saveCheckboxState(taskId, isChecked, isCustom = false) {
         console.log(`Created new progress entry for date: ${dateKey}`);
     }
     
-    // Initialize late completions structure if not exists
     if (!dateProgress[dateKey].lateCompletions) {
         dateProgress[dateKey].lateCompletions = { main: {}, custom: {} };
     }
     
     if (isCustom) {
         dateProgress[dateKey].custom[taskId] = isChecked;
-        
-        // Check if this is a late completion (completing a past date's task while viewing that date, but it's actually a later date)
+
         if (isChecked && dateKey < today) {
             const completionDate = today;
             dateProgress[dateKey].lateCompletions.custom[taskId] = completionDate;
             console.log(`📝 LATE COMPLETION: Custom task ${taskId} for ${dateKey} completed late on ${completionDate}`);
         } else if (!isChecked) {
-            // Remove late completion record if unchecked
             delete dateProgress[dateKey].lateCompletions.custom[taskId];
         }
     } else {
         dateProgress[dateKey].main[taskId] = isChecked;
-        
-        // Check if this is a late completion
+
         if (isChecked && dateKey < today) {
             const completionDate = today;
             dateProgress[dateKey].lateCompletions.main[taskId] = completionDate;
             console.log(`📝 LATE COMPLETION: Main task ${taskId} for ${dateKey} completed late on ${completionDate}`);
         } else if (!isChecked) {
-            // Remove late completion record if unchecked
             delete dateProgress[dateKey].lateCompletions.main[taskId];
         }
     }
     
     localStorage.setItem(currentUser + '_dateProgress', JSON.stringify(dateProgress));
-    
-    // Update the visual display for late completion notes
     displayLateCompletionNote(taskId, isCustom);
-    
+
+    // 🔹 NEW: save to cloud as well
+    scheduleCloudSave();
+
     console.log('Updated dateProgress:', dateProgress[dateKey]);
+
 }
 
 function displayLateCompletionNote(taskId, isCustom = false) {
