@@ -5,13 +5,109 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login - LOCK IN CHECKLIST</title>
 <style>
-    body { font-family: Arial, sans-serif; background-color: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; }
-    .login-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 300px; }
-    input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
-    button { width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: #333; color: white; cursor: pointer; }
-    button:hover { background-color: #555; }
-    p { text-align: center; }
-    a { color: #333; text-decoration: none; font-weight: bold; }
+    body { 
+        font-family: 'Aptos Mono', monospace; 
+        background: url('https://i.ibb.co/4ZGv8Bkt/Screenshot-2025-08-14-192943.png') center/contain no-repeat fixed;
+        background-size: 111%;
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        height: 100vh; 
+        margin: 0;
+        transition: background-image 0.5s ease;
+    }
+    .login-box { 
+        background: rgba(255, 255, 255, 0.75); 
+        backdrop-filter: none;
+        padding: 20px; 
+        border-radius: 15px; 
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
+        width: 220px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+    }
+    .background-controls {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .bg-button {
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 15px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 11px;
+        font-family: 'Aptos Mono', monospace;
+        transition: all 0.3s ease;
+        min-width: 60px;
+    }
+    .bg-button:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: scale(1.05);
+    }
+    .bg-button.active {
+        background: rgba(51, 51, 51, 0.8);
+        color: white;
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: bold;
+    }
+    input { 
+        width: 100%; 
+        padding: 12px; 
+        margin: 10px 0; 
+        border-radius: 8px; 
+        border: 1px solid rgba(204, 204, 204, 0.6);
+        background: rgba(255, 255, 255, 0.9);
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+    input:focus {
+        outline: none;
+        border-color: #333;
+        background: rgba(255, 255, 255, 1);
+    }
+    button { 
+        width: 100%; 
+        padding: 12px; 
+        border: none; 
+        border-radius: 8px; 
+        background-color: #333; 
+        color: white; 
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+        box-sizing: border-box;
+    }
+    button:hover { 
+        background-color: #555; 
+    }
+    p { 
+        text-align: center; 
+        margin-top: 15px;
+        color: #333;
+    }
+    a { 
+        color: #333; 
+        text-decoration: none; 
+        font-weight: bold;
+        transition: color 0.3s ease;
+    }
+    a:hover {
+        color: #555;
+        text-decoration: underline;
+    }
+    #signup {
+        margin-top: 20px;
+    }
 </style>
 </head>
 <body>
@@ -31,10 +127,60 @@
     </div>
 </div>
 
+<div class="background-controls">
+    <button class="bg-button active" onclick="changeBackground(0)">Standard</button>
+    <button class="bg-button" onclick="changeBackground(1)">Summer</button>
+    <button class="bg-button" onclick="changeBackground(2)">Winter</button>
+</div>
+
 <script>
+// Background images array
+const backgrounds = [
+    'https://i.ibb.co/4ZGv8Bkt/Screenshot-2025-08-14-192943.png',
+    'https://i.pinimg.com/736x/62/d7/34/62d7347f6d5c8274eb5c04f494c63579.jpg',
+    'https://i.pinimg.com/736x/6b/79/1f/6b791f706bfc6010b1f285ffe7867a50.jpg'
+];
+
+// Load global background preference (shared across all pages)
+let currentBgIndex = parseInt(localStorage.getItem('globalBackgroundIndex')) || 0;
+
+// Change background function with global sync
+function changeBackground(index) {
+    currentBgIndex = index;
+    document.body.style.backgroundImage = `url('${backgrounds[index]}')`;
+    
+    // Save to global preference (shared across pages)
+    localStorage.setItem('globalBackgroundIndex', index);
+    
+    // Update active button
+    document.querySelectorAll('.bg-button').forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+    });
+}
+
+// Initialize background on page load
+function initializeBackground() {
+    changeBackground(currentBgIndex);
+}
+
 // Show/hide signup
-function showSignup() { document.getElementById('signup').style.display = 'block'; }
-function showLogin() { document.getElementById('signup').style.display = 'none'; }
+function showSignup() { 
+    document.getElementById('signup').style.display = 'block'; 
+    document.querySelector('h2').style.display = 'none';
+    document.getElementById('username').style.display = 'none';
+    document.getElementById('password').style.display = 'none';
+    document.querySelector('button[onclick="login()"]').style.display = 'none';
+    document.querySelector('p').style.display = 'none';
+}
+
+function showLogin() { 
+    document.getElementById('signup').style.display = 'none';
+    document.querySelector('h2').style.display = 'block';
+    document.getElementById('username').style.display = 'block';
+    document.getElementById('password').style.display = 'block';
+    document.querySelector('button[onclick="login()"]').style.display = 'block';
+    document.querySelector('p').style.display = 'block';
+}
 
 // Hashing function using SHA-256
 async function hashPassword(password) {
@@ -76,6 +222,44 @@ async function login() {
         alert("Invalid username or password");
     }
 }
+
+// Auto-focus login username on page load
+window.addEventListener('load', function() {
+    document.getElementById('username').focus();
+    initializeBackground(); // Initialize background
+});
+
+// Login form: Enter in username → focus password
+document.getElementById('username').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        document.getElementById('password').focus();
+    }
+});
+
+// Login form: Enter in password → attempt login
+document.getElementById('password').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        login();
+    }
+});
+
+// Signup form: Enter in username → focus password
+document.getElementById('new-username').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        document.getElementById('new-password').focus();
+    }
+});
+
+// Signup form: Enter in password → attempt signup
+document.getElementById('new-password').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        signup();
+    }
+});
 </script>
 </body>
 </html>

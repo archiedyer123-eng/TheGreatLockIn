@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRADING</title>
+<link href="https://fonts.googleapis.com/css2?family=Aptos+Mono&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #00796b;
+        --secondary: #333;
+        --background: rgba(255, 255, 255, 0.9);
+        --text: #333;
+        --accent: #ff5722;
+        --success: #4caf50;
+        --warning: #ff9800;
+        --profit: #2e7d32;
+        --loss: #d32f2f;
+    }
+
+    body {
+        font-family: 'Aptos Mono', monospace;
+        background: url('https://i.imgur.com/dhCwS1U.jpeg') no-repeat center center fixed;
+        background-size: cover;
+        padding: 0;
+        margin: 0;
+        color: var(--text);
+        transition: background-image 0.5s ease;
+    }
+
+    .main-content {
+        padding: 20px;
+        margin-top: 20px;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    h1 {
+        text-align: center;
+        color: var(--primary);
+        font-size: 1.8em;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(80, 80, 80, 0.5);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 7px 11px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: 'Aptos Mono', monospace;
+        font-size: 12px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        z-index: 1002;
+    }
+
+    .back-btn:hover {
+        background: rgba(100, 100, 100, 0.7);
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .background-controls {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 1000;
+    }
+
+    .bg-button {
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 15px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 11px;
+        font-family: 'Aptos Mono', monospace;
+        transition: all 0.3s ease;
+        min-width: 60px;
+    }
+
+    .bg-button:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: scale(1.05);
+    }
+
+    .bg-button.active {
+        background: rgba(51, 51, 51, 0.8);
+        color: white;
+    }
+
+    .daily-tracker {
+        background: var(--background);
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+    }
+
+    .day-navigation {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        gap: 10px;
+    }
+
+    .day-card {
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+        min-width: 80px;
+    }
+
+    .day-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .day-card.current {
+        background: var(--primary);
+        color: white;
+        transform: scale(1.15);
+        border: 1px solid var(--primary);
+        min-width: 110px;
+        padding: 12px;
+    }
+
+    .day-card.side {
+        opacity: 0.8;
+        transform: scale(0.9);
+    }
+
+    .day-card.future {
+        opacity: 0.4;
+        background: rgba(200, 200, 200, 0.3);
+        cursor: not-allowed;
+        filter: grayscale(50%);
+    }
+
+    .day-card.future:hover {
+        transform: none;
+        box-shadow: none;
+        background: rgba(200, 200, 200, 0.3);
+    }
+
+    .day-card.has-data {
+        position: relative;
+    }
+
+    .day-card.has-data::after {
+        content: '●';
+        position: absolute;
+        top: 5px;
+        right: 8px;
+        color: var(--success);
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .day-name {
+        font-weight: bold;
+        font-size: 0.9em;
+        margin-bottom: 3px;
+    }
+
+    .day-date {
+        font-size: 0.75em;
+        opacity: 0.8;
+    }
+
+    .day-card.current .day-date {
+        opacity: 1;
+    }
+
+    .nav-arrow {
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.1em;
+        color: var(--primary);
+        transition: all 0.3s ease;
+    }
+
+    .nav-arrow:hover {
+        background: var(--primary);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .current-date-info {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .current-date-display {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: var(--primary);
+        margin-bottom: 3px;
+    }
+
+    .current-weekday {
+        font-size: 1em;
+        color: var(--text);
+        opacity: 0.7;
+    }
+
+    .trading-sections {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .section {
+        background: var(--background);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+    }
+
+    .section-title {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: var(--primary);
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .notes-textarea {
+        width: 100%;
+        min-height: 200px;
+        padding: 12px;
+        border: 1px solid rgba(0, 121, 107, 0.3);
+        border-radius: 8px;
+        font-family: 'Aptos Mono', monospace;
+        font-size: 14px;
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--text);
+        resize: vertical;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .notes-textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 15px rgba(0, 121, 107, 0.2);
+        background: rgba(255, 255, 255, 1);
+    }
+
+    .save-indicator {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 0.9em;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .save-indicator.show {
+        opacity: 1;
+    }
+
+    .save-indicator.saving {
+        color: var(--warning);
+    }
+
+    .save-indicator.saved {
+        color: var(--success);
+    }
+
+    .quick-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 15px 0;
+        flex-wrap: wrap;
+    }
+
+    .quick-btn {
+        padding: 6px 12px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        font-family: 'Aptos Mono', monospace;
+        font-size: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .quick-btn:hover {
+        background: #005751;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .quick-btn.profit {
+        background: var(--profit);
+    }
+
+    .quick-btn.profit:hover {
+        background: #1b5e20;
+    }
+
+    .quick-btn.loss {
+        background: var(--loss);
+    }
+
+    .quick-btn.loss:hover {
+        background: #c62828;
+    }
+
+    .trade-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .trade-input {
+        padding: 8px 12px;
+        border: 1px solid rgba(0, 121, 107, 0.3);
+        border-radius: 6px;
+        font-family: 'Aptos Mono', monospace;
+        font-size: 14px;
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--text);
+        transition: all 0.3s ease;
+    }
+
+    .trade-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 10px rgba(0, 121, 107, 0.2);
+        background: rgba(255, 255, 255, 1);
+    }
+
+    .trade-input.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .add-trade-btn {
+        grid-column: 1 / -1;
+        padding: 10px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: 'Aptos Mono', monospace;
+        font-size: 14px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .add-trade-btn:hover {
+        background: #005751;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+
+    .monthly-stats {
+        background: var(--background);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 20px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        text-align: center;
+        grid-column: 1 / -1;
+    }
+
+    .monthly-stats h3 {
+        color: var(--primary);
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .stat-item {
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 8px;
+        padding: 10px;
+        border: 1px solid rgba(0, 121, 107, 0.2);
+    }
+
+    .stat-number {
+        font-size: 1.4em;
+        font-weight: bold;
+        color: var(--primary);
+        display: block;
+    }
+
+    .stat-number.profit {
+        color: var(--profit);
+    }
+
+    .stat-number.loss {
+        color: var(--loss);
+    }
+
+    .stat-label {
+        font-size: 0.8em;
+        color: var(--text);
+        opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+        .trading-sections {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .day-navigation {
+            gap: 10px;
+        }
+        
+        .day-card {
+            min-width: 80px;
+            padding: 10px;
+        }
+        
+        .day-card.current {
+            min-width: 120px;
+            padding: 15px;
+        }
+        
+        .nav-arrow {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2em;
+        }
+        
+        .notes-textarea {
+            min-height: 150px;
+            padding: 15px;
+            font-size: 14px;
+        }
+
+        .trade-form {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .day-navigation {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .day-cards-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .quick-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+</style>
+</head>
+<body>
+<a href="index.html" class="back-btn">← Return to Home</a>
+
+<div class="main-content">
+    <h1>TRADING</h1>
+    
+    <div class="daily-tracker">
+        <div class="day-navigation">
+            <button class="nav-arrow" onclick="changeDay(-1)">◀</button>
+            
+            <div class="day-card side" id="dayMinus1" onclick="setCurrentDay(-1)">
+                <div class="day-name" id="dayNameMinus1"></div>
+                <div class="day-date" id="dayDateMinus1"></div>
+            </div>
+            
+            <div class="day-card current" id="dayCurrent" onclick="setCurrentDay(0)">
+                <div class="day-name" id="dayNameCurrent"></div>
+                <div class="day-date" id="dayDateCurrent"></div>
+            </div>
+            
+            <div class="day-card side" id="dayPlus1" onclick="setCurrentDay(1)">
+                <div class="day-name" id="dayNamePlus1"></div>
+                <div class="day-date" id="dayDatePlus1"></div>
+            </div>
+            
+            <button class="nav-arrow" onclick="changeDay(1)">▶</button>
+        </div>
+
+        <div class="current-date-info">
+            <div class="current-date-display" id="currentDateDisplay"></div>
+            <div class="current-weekday" id="currentWeekday"></div>
+        </div>
+
+        <div class="trading-sections">
+            <div class="section">
+                <div class="section-title" id="learningTitle">Learning Notes</div>
+                
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="addLearningNote('Chart patterns: ')">Patterns</button>
+                    <button class="quick-btn" onclick="addLearningNote('Support/Resistance: ')">S/R</button>
+                    <button class="quick-btn" onclick="addLearningNote('Risk management: ')">Risk Mgmt</button>
+                    <button class="quick-btn" onclick="addLearningNote('Psychology: ')">Psychology</button>
+                </div>
+                
+                <textarea 
+                    class="notes-textarea" 
+                    id="learningNotes" 
+                    placeholder="Today's learning notes, strategies, market observations..."
+                    oninput="saveLearningNotes()"
+                ></textarea>
+                <div class="save-indicator" id="learningIndicator">Auto-saving...</div>
+            </div>
+
+            <div class="section">
+                <div class="section-title" id="tradesTitle">Trade Analysis</div>
+                
+                <div class="trade-form">
+                    <input type="text" class="trade-input" id="symbolInput" placeholder="Symbol (e.g., AAPL)">
+                    <input type="number" class="trade-input" id="priceInput" placeholder="Entry Price" step="0.01">
+                    <input type="number" class="trade-input" id="exitInput" placeholder="Exit Price" step="0.01">
+                    <input type="number" class="trade-input" id="quantityInput" placeholder="Quantity">
+                    <input type="text" class="trade-input full-width" id="reasonInput" placeholder="Reason for trade / What happened">
+                    <button class="add-trade-btn" onclick="addTrade()">Add Trade</button>
+                </div>
+
+                <div class="quick-actions">
+                    <button class="quick-btn profit" onclick="addTradeNote('PROFIT: ')">Profit</button>
+                    <button class="quick-btn loss" onclick="addTradeNote('LOSS: ')">Loss</button>
+                    <button class="quick-btn" onclick="addTradeNote('BREAKEVEN: ')">Breakeven</button>
+                    <button class="quick-btn" onclick="addTradeNote('PAPER: ')">Paper Trade</button>
+                </div>
+                
+                <textarea 
+                    class="notes-textarea" 
+                    id="tradeNotes" 
+                    placeholder="Trade details, what went right/wrong, lessons learned..."
+                    oninput="saveTradeNotes()"
+                ></textarea>
+                <div class="save-indicator" id="tradeIndicator">Auto-saving...</div>
+            </div>
+        </div>
+
+        <div class="monthly-stats">
+            <h3>This Month's Trading Progress</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalTrades">0</span>
+                    <span class="stat-label">Total Trades</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number profit" id="profitTrades">0</span>
+                    <span class="stat-label">Profitable</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number loss" id="lossTrades">0</span>
+                    <span class="stat-label">Losses</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="breakevenTrades">0</span>
+                    <span class="stat-label">Breakeven</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="paperTrades">0</span>
+                    <span class="stat-label">Paper Trades</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="winRate">0%</span>
+                    <span class="stat-label">Win Rate</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="background-controls">
+    <button class="bg-button active" onclick="changeBackground(0)">Standard</button>
+    <button class="bg-button" onclick="changeBackground(1)">Summer</button>
+    <button class="bg-button" onclick="changeBackground(2)">Winter</button>
+</div>
+
+<script>
+// Check if user is logged in
+const currentUser = localStorage.getItem('currentUser');
+if (!currentUser) {
+    window.location.href = 'login.html';
+}
+
+// Background system
+const backgrounds = [
+    'https://i.imgur.com/dhCwS1U.jpeg',
+    'https://i.pinimg.com/736x/62/d7/34/62d7347f6d5c8274eb5c04f494c63579.jpg',
+    'https://i.pinimg.com/736x/6b/79/1f/6b791f706bfc6010b1f285ffe7867a50.jpg'
+];
+
+let currentBgIndex = parseInt(localStorage.getItem('globalBackgroundIndex')) || 0;
+
+function changeBackground(index) {
+    currentBgIndex = index;
+    document.body.style.backgroundImage = `url('${backgrounds[index]}')`;
+    localStorage.setItem('globalBackgroundIndex', index);
+    
+    document.querySelectorAll('.bg-button').forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+    });
+}
+
+function initializeBackground() {
+    changeBackground(currentBgIndex);
+}
+
+// Date management
+let currentDateOffset = 0;
+
+function getDateWithOffset(offset) {
+    const date = new Date();
+    date.setDate(date.getDate() + offset);
+    return date;
+}
+
+function formatDate(date) {
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    return date.toLocaleDateString('en-US', options);
+}
+
+function formatShortDate(date) {
+    const options = { 
+        month: 'short', 
+        day: 'numeric' 
+    };
+    return date.toLocaleDateString('en-US', options);
+}
+
+function getDayName(date) {
+    const options = { weekday: 'long' };
+    return date.toLocaleDateString('en-US', options);
+}
+
+function getDateKey(date) {
+    return date.toISOString().split('T')[0];
+}
+
+function updateDayDisplay() {
+    const dayMinus1 = getDateWithOffset(currentDateOffset - 1);
+    const dayCurrent = getDateWithOffset(currentDateOffset);
+    const dayPlus1 = getDateWithOffset(currentDateOffset + 1);
+    const today = new Date();
+
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    updateDayCard('dayMinus1', dayMinus1, 'dayNameMinus1', 'dayDateMinus1', todayOnly);
+    updateDayCard('dayCurrent', dayCurrent, 'dayNameCurrent', 'dayDateCurrent', todayOnly);
+    updateDayCard('dayPlus1', dayPlus1, 'dayNamePlus1', 'dayDatePlus1', todayOnly);
+
+    document.getElementById('currentDateDisplay').textContent = formatDate(dayCurrent);
+    document.getElementById('currentWeekday').textContent = getDayName(dayCurrent);
+    
+    const isToday = getDateKey(dayCurrent) === getDateKey(today);
+    document.getElementById('learningTitle').textContent = 
+        isToday ? "Today's Learning Notes" : `Learning Notes - ${formatShortDate(dayCurrent)}`;
+    document.getElementById('tradesTitle').textContent = 
+        isToday ? "Today's Trades" : `Trades - ${formatShortDate(dayCurrent)}`;
+
+    loadNotes();
+    updateMonthlyStats();
+}
+
+function updateDayCard(cardId, date, nameId, dateId, todayOnly) {
+    const card = document.getElementById(cardId);
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    
+    document.getElementById(nameId).textContent = getDayName(date);
+    document.getElementById(dateId).textContent = formatShortDate(date);
+    
+    card.classList.remove('future', 'has-data');
+    
+    if (dateOnly > todayOnly) {
+        card.classList.add('future');
+    }
+    
+    const dateKey = getDateKey(date);
+    const learningNotes = localStorage.getItem(currentUser + '_tradingLearning_' + dateKey) || '';
+    const tradeNotes = localStorage.getItem(currentUser + '_tradingTrades_' + dateKey) || '';
+    
+    if (learningNotes.trim().length > 0 || tradeNotes.trim().length > 0) {
+        card.classList.add('has-data');
+    }
+}
+
+function changeDay(direction) {
+    currentDateOffset += direction;
+    updateDayDisplay();
+}
+
+function setCurrentDay(relativeOffset) {
+    currentDateOffset += relativeOffset;
+    updateDayDisplay();
+}
+
+// Notes management
+let learningTimeout = null;
+let tradeTimeout = null;
+
+function saveLearningNotes() {
+    const currentDate = getDateWithOffset(currentDateOffset);
+    const today = new Date();
+    
+    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
+    if (currentDateOnly > todayOnly) {
+        const indicator = document.getElementById('learningIndicator');
+        indicator.className = 'save-indicator show';
+        indicator.textContent = '⚠️ Cannot save future entries';
+        indicator.style.color = '#ff9800';
+        
+        setTimeout(() => {
+            indicator.className = 'save-indicator';
+        }, 3000);
+        return;
+    }
+    
+    const notes = document.getElementById('learningNotes').value;
+    const dateKey = getDateKey(currentDate);
+    
+    const indicator = document.getElementById('learningIndicator');
+    indicator.className = 'save-indicator show saving';
+    indicator.textContent = 'Saving...';
+    
+    if (learningTimeout) {
+        clearTimeout(learningTimeout);
+    }
+    
+    learningTimeout = setTimeout(() => {
+        localStorage.setItem(currentUser + '_tradingLearning_' + dateKey, notes);
+        
+        indicator.className = 'save-indicator show saved';
+        indicator.textContent = '✅ Saved';
+        
+        updateDayDisplay();
+        
+        setTimeout(() => {
+            indicator.className = 'save-indicator';
+        }, 2000);
+    }, 1000);
+}
+
+function saveTradeNotes() {
+    const currentDate = getDateWithOffset(currentDateOffset);
+    const today = new Date();
+    
+    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
+    if (currentDateOnly > todayOnly) {
+        const indicator = document.getElementById('tradeIndicator');
+        indicator.className = 'save-indicator show';
+        indicator.textContent = '⚠️ Cannot save future entries';
+        indicator.style.color = '#ff9800';
+        
+        setTimeout(() => {
+            indicator.className = 'save-indicator';
+        }, 3000);
+        return;
+    }
+    
+    const notes = document.getElementById('tradeNotes').value;
+    const dateKey = getDateKey(currentDate);
+    
+    const indicator = document.getElementById('tradeIndicator');
+    indicator.className = 'save-indicator show saving';
+    indicator.textContent = 'Saving...';
+    
+    if (tradeTimeout) {
+        clearTimeout(tradeTimeout);
+    }
+    
+    tradeTimeout = setTimeout(() => {
+        localStorage.setItem(currentUser + '_tradingTrades_' + dateKey, notes);
+        
+        indicator.className = 'save-indicator show saved';
+        indicator.textContent = '✅ Saved';
+        
+        updateDayDisplay();
+        updateMonthlyStats();
+        
+        setTimeout(() => {
+            indicator.className = 'save-indicator';
+        }, 2000);
+    }, 1000);
+}
+
+function loadNotes() {
+    const currentDate = getDateWithOffset(currentDateOffset);
+    const dateKey = getDateKey(currentDate);
+    
+    const learningNotes = localStorage.getItem(currentUser + '_tradingLearning_' + dateKey) || '';
+    const tradeNotes = localStorage.getItem(currentUser + '_tradingTrades_' + dateKey) || '';
+    
+    document.getElementById('learningNotes').value = learningNotes;
+    document.getElementById('tradeNotes').value = tradeNotes;
+}
+
+function addLearningNote(text) {
+    const currentDate = getDateWithOffset(currentDateOffset);
+    const today = new Date();
+    
+    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
+    if (currentDateOnly > todayOnly) {
+        alert("You cannot add notes for future dates until that day arrives!");
+        return;
+    }
+    
+    const textarea = document.getElementById('learningNotes');
+    const currentValue = textarea.value;
+    
+    const newNote = `${currentValue ? currentValue + '\n\n' : ''}${text}`;
+    textarea.value = newNote;
+    
+    textarea.focus();
+    textarea.setSelectionRange(newNote.length, newNote.length);
+    
+    saveLearningNotes();
+}
+
+function addTradeNote(text) {
+    const currentDate = getDateWithOffset(currentDateOffset);
+    const today = new Date();
+    
+    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
+    if (currentDateOnly > todayOnly) {
+        alert("You cannot add notes for future dates until that day arrives!");
+        return;
+    }
+    
+    const textarea =

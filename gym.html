@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE GYM</title>
+<link href="https://fonts.googleapis.com/css2?family=Aptos+Mono&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #00796b;
+        --secondary: #333;
+        --background: rgba(255, 255, 255, 0.9);
+        --text: #333;
+        --accent: #ff5722;
+        --success: #4caf50;
+        --warning: #ff9800;
+        --rest-color: #9c27b0;
+    }
+
+    body {
+        font-family: 'Aptos Mono', monospace;
+        background: url('https://i.imgur.com/VdRq4Vr.png') no-repeat center center fixed;
+        background-size: cover;
+        padding: 0;
+        margin: 0;
+        color: var(--text);
+        transition: background-image 0.5s ease;
+    }
+
+    .main-content {
+        padding: 20px;
+        margin-top: 20px;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    h1 {
+        text-align: center;
+        color: var(--primary);
+        font-size: 1.8em;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(80, 80, 80, 0.5);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 7px 11px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: 'Aptos Mono', monospace;
+        font-size: 12px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        z-index: 1002;
+    }
+
+    .back-btn:hover {
+        background: rgba(100, 100, 100, 0.7);
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .background-controls {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 1000;
+    }
+
+    .bg-button {
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 15px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 11px;
+        font-family: 'Aptos Mono', monospace;
+        transition: all 0.3s ease;
+        min-width: 60px;
+    }
+
+    .bg-button:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: scale(1.05);
+    }
+
+    .bg-button.active {
+        background: rgba(51, 51, 51, 0.8);
+        color: white;
+    }
+
+    .workout-schedule {
+        background: var(--background);
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        text-align: center;
+    }
+
+    .schedule-title {
+        color: var(--primary);
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .current-workout {
+        background: var(--primary);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-size: 1.1em;
+        font-weight: bold;
+        margin-bottom: 10px;
+        display: inline-block;
+        min-width: 200px;
+    }
+
+    .current-workout.rest {
+        background: var(--rest-color);
+    }
+
+    .schedule-info {
+        font-size: 0.9em;
+        color: var(--text);
+        opacity: 0.8;
+        margin-top: 5px;
+    }
+
+    .daily-tracker {
+        background: var(--background);
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+    }
+
+    .day-navigation {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        gap: 10px;
+    }
+
+    .day-card {
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+        min-width: 80px;
+    }
+
+    .day-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .day-card.current {
+        background: var(--primary);
+        color: white;
+        transform: scale(1.15);
+        border: 1px solid var(--primary);
+        min-width: 110px;
+        padding: 12px;
+    }
+
+    .day-card.side {
+        opacity: 0.8;
+        transform: scale(0.9);
+    }
+
+    .day-card.future {
+        opacity: 0.4;
+        background: rgba(200, 200, 200, 0.3);
+        cursor: not-allowed;
+        filter: grayscale(50%);
+    }
+
+    .day-card.future:hover {
+        transform: none;
+        box-shadow: none;
+        background: rgba(200, 200, 200, 0.3);
+    }
+
+    .day-card.has-exercise {
+        position: relative;
+    }
+
+    .day-card.has-exercise::after {
+        content: '●';
+        position: absolute;
+        top: 5px;
+        right: 8px;
+        color: var(--success);
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .day-name {
+        font-weight: bold;
+        font-size: 0.9em;
+        margin-bottom: 3px;
+    }
+
+    .day-date {
+        font-size: 0.75em;
+        opacity: 0.8;
+    }
+
+    .day-card.current .day-date {
+        opacity: 1;
+    }
+
+    .nav-arrow {
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.1em;
+        color: var(--primary);
+        transition: all 0.3s ease;
+    }
+
+    .nav-arrow:hover {
+        background: var(--primary);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .current-date-info {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .current-date-display {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: var(--primary);
+        margin-bottom: 3px;
+    }
+
+    .current-weekday {
+        font-size: 1em;
+        color: var(--text);
+        opacity: 0.7;
+    }
+
+    .notes-section {
+        margin-top: 20px;
+    }
+
+    .notes-title {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: var(--primary);
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .notes-textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 12px;
+        border: 1px solid rgba(0, 121, 107, 0.3);
+        border-radius: 8px;
+        font-family: 'Aptos Mono', monospace;
+        font-size: 14px;
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--text);
+        resize: vertical;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .notes-textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 15px rgba(0, 121, 107, 0.2);
+        background: rgba(255, 255, 255, 1);
+    }
+
+    .save-indicator {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 0.9em;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .save-indicator.show {
+        opacity: 1;
+    }
+
+    .save-indicator.saving {
+        color: var(--warning);
+    }
+
+    .save-indicator.saved {
+        color: var(--success);
+    }
+
+    .quick-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 15px 0;
+        flex-wrap: wrap;
+    }
+
+    .quick-btn {
+        padding: 6px 12px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        font-family: 'Aptos Mono', monospace;
+        font-size: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .quick-btn:hover {
+        background: #005751;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .quick-btn.rest {
+        background: var(--rest-color);
+    }
+
+    .quick-btn.rest:hover {
+        background: #7b1fa2;
+    }
+
+    .monthly-stats {
+        background: var(--background);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 20px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        text-align: center;
+    }
+
+    .monthly-stats h3 {
+        color: var(--primary);
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .stat-item {
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 8px;
+        padding: 10px;
+        border: 1px solid rgba(0, 121, 107, 0.2);
+    }
+
+    .stat-number {
+        font-size: 1.4em;
+        font-weight: bold;
+        color: var(--primary);
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 0.8em;
+        color: var(--text);
+        opacity: 0.8;
+    }
+</style>
+</head>
+<body>
+<a href="index.html" class="back-btn">← Return to Home</a>
+
+<div class="main-content">
+    <h1>THE GYM</h1>
+    
+    <div class="workout-schedule">
+        <div class="schedule-title">Today's Workout Schedule</div>
+        <div class="current-workout" id="currentWorkout">Chest & Back</div>
+        <div class="schedule-info" id="scheduleInfo">Day 1 of 6-day cycle</div>
+    </div>
+    
+    <div class="daily-tracker">
+        <div class="day-navigation">
+            <button class="nav-arrow" onclick="changeDay(-1)">◀</button>
+            
+            <div class="day-card side" id="dayMinus1" onclick="setCurrentDay(-1)">
+                <div class="day-name" id="dayNameMinus1"></div>
+                <div class="day-date" id="dayDateMinus1"></div>
+            </div>
+            
+            <div class="day-card current" id="dayCurrent" onclick="setCurrentDay(0)">
+                <div class="day-name" id="dayNameCurrent"></div>
+                <div class="day-date" id="dayDateCurrent"></div>
+            </div>
+            
+            <div class="day-card side" id="dayPlus1" onclick="setCurrentDay(1)">
+                <div class="day-name" id="dayNamePlus1"></div>
+                <div class="day-date" id="dayDatePlus1"></div>
+            </div>
+            
+            <button class="nav-arrow" onclick="changeDay(1)">▶</button>
+        </div>
+
+        <div class="current-date-info">
+            <div class="current-date-display" id="currentDateDisplay"></div>
+            <div class="current-weekday" id="currentWeekday"></div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="quick-btn" onclick="addQuickNote('Legs - ')">Legs</button>
+            <button class="quick-btn" onclick="addQuickNote('Arms - ')">Arms</button>
+            <button class="quick-btn" onclick="addQuickNote('Shoulders - ')">Shoulders</button>
+            <button class="quick-btn" onclick="addQuickNote('Chest - ')">Chest</button>
+            <button class="quick-btn" onclick="addQuickNote('Back - ')">Back</button>
+            <button class="quick-btn" onclick="addQuickNote('Abs - ')">Abs</button>
+            <button class="quick-btn rest" onclick="addQuickNote('Rest Day - ')">Rest Day</button>
+        </div>
+
+        <div class="notes-section">
+            <div class="notes-title" id="notesTitle">Daily Gym Notes</div>
+            <textarea 
+                class="notes-textarea" 
+                id="gymNotes" 
+                placeholder=""
+                oninput="saveNotes()"
+            ></textarea>
+            <div class="save-indicator" id="saveIndicator">Auto-saving...</div>
+        </div>
+    </div>
+
+    <div class="monthly-stats">
+        <h3>This Month's Gym Progress</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number" id="totalWorkouts">0</span>
+                <span class="stat-label">Total Workouts</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="legsCount">0</span>
+                <span class="stat-label">Legs</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="armsCount">0</span>
+                <span class="stat-label">Arms</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="shouldersCount">0</span>
+                <span class="stat-label">Shoulders</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="chestCount">0</span>
+                <span class="stat-label">Chest</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="backCount">0</span>
+                <span class="stat-label">Back</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="absCount">0</span>
+                <span class="stat-label">Abs</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="restCount">0</span>
+                <span class="stat-label">Rest Days</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="background-controls">
+    <button class="bg-button active" onclick="changeBackground(0)">Standard</button>
+    <button class="bg-button" onclick="changeBackground(1)">Summer</button>
+    <button class="bg-button" onclick="changeBackground(2)">Winter</button>
+</div>
+
+<script>
+// Check if user is logged in
+const currentUser = localStorage.getItem('currentUser');
+if (!currentUser) {
+    window.location.href = 'login.html';
+}
+
+// Workout schedule system
+const workoutCycle = [
+    'Chest & Back',    // Day 1
+    'Arms',            // Day 2
+    'Legs',            // Day 3
+    'Rest',            // Day 4
+    'Shoulders',       // Day 5
+    'Rest'             // Day 6
+];
+
+function getWorkoutDay(date) {
+    // Get a consistent starting point (you can change this date to when you want to start your cycle)
+    const startDate = new Date('2024-01-01'); // Monday, January 1, 2024
+    const daysDifference = Math.floor((date - startDate) / (1000 * 60 * 60 * 24));
+    const cyclePosition = daysDifference % 6;
+    return {
+        workout: workoutCycle[cyclePosition],
+        day: cyclePosition + 1
+    };
+}
+
+function updateWorkoutSchedule() {
+    const currentDate = getDateWithOffset(currentDateOffset);
+    const workoutInfo = getWorkoutDay(currentDate);
+    
+    const workoutElement = document.getElementById('currentWorkout');
+    const scheduleInfoElement = document.getElementById('scheduleInfo');
+    
+    workoutElement.textContent = workoutInfo.workout;
+    scheduleInfoElement.textContent = `Day ${workoutInfo.day} of 6-day cycle`;
+    
+    // Update styling based on workout type
+    workoutElement.classList.remove('rest');
+    if (workoutInfo.workout === 'Rest') {
+        workoutElement.classList.add('rest');
+    }
+}
+
+// Background system
+const backgrounds = [
+    'https://i.imgur.com/nVNCiSg.jpeg',
+    'https://i.pinimg.com/736x/62/d7/34/62d7347f6d5c8274eb5c04f494c63579.jpg',
+    'https://i.pinimg.com/736x/6b/79/1f/6b791f706bfc6010b1f285ffe7867a50.jpg'
+];
+
+let currentBgIndex = parseInt(localStorage.getItem('globalBackgroundIndex')) || 0;
+
+function changeBackground(index) {
+    currentBgIndex = index;
+    document.body.style.backgroundImage = `url('${backgrounds[index]}')`;
+    localStorage.setItem('globalBackgroundIndex', index);
+    
+    document.querySelectorAll('.bg-button').forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+    });
+}
+
+function initializeBackground() {
+    changeBackground(currentBgIndex);
+}
+
+// Date management
+let currentDateOffset = 0;
+
+function getDateWithOffset(offset) {
+    const date = new Date();
+    date.setDate(date.getDate() + offset);
+    return date;
+}
+
+function formatDate(date) {
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    return date.toLocaleDateString('en-US', options);
+}
+
+function formatShortDate(date) {
+    const options = { 
+        month: 'short', 
+        day: 'numeric' 
+    };
+    return date.toLocaleDateString('en-US', options);
+}
+
+function getDayName(date) {
+    const options = { weekday: 'long' };
+    return date.toLocaleDateString('en-US', options);
+}
+
+function getDateKey(date) {
+    return date.toISOString().split('T')[0];
+}
+
+function updateDayDisplay() {
+    const dayMinus1 = getDateWithOffset(currentDateOffset - 1);
+    const dayCurrent = getDateWithOffset(currentDateOffset);
+    const dayPlus1 = getDateWithOffset(currentDateOffset + 1);
+    const today = new Date();
+
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    updateDayCard('dayMinus1', dayMinus1, 'dayNameMinus1', 'dayDateMinus1', todayOnly);
+    updateDayCard('dayCurrent', dayCurrent, 'dayNameCurrent', 'dayDateCurrent', todayOnly);
+    updateDayCard('dayPlus1', dayPlus1, 'dayNamePlus1', 'dayDatePlus1', todayOnly);
+
+    document.getElementById('currentDateDisplay').textContent = formatDate(dayCurrent);
+    document.getElementById('currentWeekday').textContent = getDayName(dayCurrent);
+    
+    const isToday = getDateKey(dayCurrent) === getDateKey(today);
+    document.getElementById('notesTitle').textContent = 
+        isToday ? "Today's Gym Notes" : `Gym Notes - ${formatShortDate(dayCurrent)}`;
+
+    loadNotes();
+    updateMonthlyStats();
+    updateWorkoutSchedule();
+}
+
+function updateDayCard(cardId, date, nameId, dateId, todayOnly) {
+    const card = document.getElementById(cardId);
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    
+    document.getElementById(nameId).textContent = getDayName(date);
+    document.getElementById(dateId).textContent = formatShortDate(date);
+    
+    card.classList.remove('future', 'has-exercise');
+    
+    if (dateOnly > todayOnly) {
+        card.classList.add('future');
+    }
+    
+    const dateKey = getDateKey(date);
+    const notes = localStorage.getItem(currentUser + '_gymNotes_' + dateKey) || '';
+    if (notes.trim().length > 0) {
+        card.classList.add('has-exercise');
+    }
+}
+
+function changeDay(direction) {
+    currentDateOffset += direction;
+    updateDayDisplay();
+}
+
+function setCurrentDay(relativeOffset) {
+    currentDateOffset += relativeOffset;
+    updateDayDisplay();
+}
+
+// Notes management
+let saveTimeout = null;
+
+function saveNotes() {
+    const currentDate = getDateWithOffset(currentDateOffset);
+    const today = new Date();
+    
+    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
+    if (currentDateOnly > todayOnly) {
+        const indicator = document.getElementById('saveIndicator');
+        indicator.className = 'save-indicator show';
+        indicator.textContent = '⚠️ Cannot save future entries';
+        indicator.style.color = '#ff9800';
+        
+        setTimeout(() => {
+            indicator.className = 'save-indicator';
+        }, 3000);
+        return;
+    }
+    
+    const notes = document.getElementById('gymNotes').value;
+    const dateKey = getDateKey(currentDate);
+    
+    const indicator = document.getElementById('saveIndicator');
+    indicator.className = 'save-indicator show saving';
+    indicator.textContent = 'Saving...';
+    
+    if (saveTimeout) {
+        clearTimeout(saveTimeout);
+    }
+    
+    saveTimeout = setTimeout(() => {
+        localStorage.setItem(currentUser + '_gymNotes_' + dateKey, notes);
+        
+        indicator.className = 'save-indicator show saved';
+        indicator.textContent = '✅ Saved';
+        
+        updateDayDisplay();
+        
+        setTimeout(() => {
+            indicator.className = 'save-indicator';
+        }, 2000);
+    }, 1000);
+}
+
+function loadNotes() {
+    const currentDate = getDateWithOffset(currentDateOffset);
+    const dateKey = getDateKey(currentDate);
+    const notes = localStorage.getItem(currentUser + '_gymNotes_' + dateKey) || '';
+    
+    document.getElementById('gymNotes').value = notes;
+}
+
+function addQuickNote(text) {
+    const currentDate = getDateWithOffset(currentDateOffset);
+    const today = new Date();
+    
+    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
+    if (currentDateOnly > todayOnly) {
+        alert("You cannot add notes for future dates until that day arrives!");
+        return;
+    }
+    
+    const textarea = document.getElementById('gymNotes');
+    const currentValue = textarea.value;
+    
+    const newNote = `${currentValue ? currentValue + '\n\n' : ''}${text}`;
+    textarea.value = newNote;
+    
+    textarea.focus();
+    textarea.setSelectionRange(newNote.length, newNote.length);
+    
+    saveNotes();
+}
+
+function updateMonthlyStats() {
+    const currentDate = getDateWithOffset(currentDateOffset);
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    
+    const stats = {
+        total: 0,
+        legs: 0,
+        arms: 0,
+        shoulders: 0,
+        chest: 0,
+        back: 0,
+        abs: 0,
+        rest: 0
+    };
+    
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+        const date = new Date(year, month, day);
+        const dateKey = getDateKey(date);
+        const notes = localStorage.getItem(currentUser + '_gymNotes_' + dateKey) || '';
+        
+        if (notes.trim().length > 0) {
+            const notesLower = notes.toLowerCase();
+            
+            if (notesLower.includes('legs')) {
+                stats.legs++;
+                stats.total++;
+            }
+            if (notesLower.includes('arms')) {
+                stats.arms++;
+                stats.total++;
+            }
+            if (notesLower.includes('shoulders')) {
+                stats.shoulders++;
+                stats.total++;
+            }
+            if (notesLower.includes('chest')) {
+                stats.chest++;
+                stats.total++;
+            }
+            if (notesLower.includes('back')) {
+                stats.back++;
+                stats.total++;
+            }
+            if (notesLower.includes('abs')) {
+                stats.abs++;
+                stats.total++;
+            }
+            if (notesLower.includes('rest')) {
+                stats.rest++;
+                stats.total++;
+            }
+        }
+    }
+    
+    document.getElementById('totalWorkouts').textContent = stats.total;
+    document.getElementById('legsCount').textContent = stats.legs;
+    document.getElementById('armsCount').textContent = stats.arms;
+    document.getElementById('shouldersCount').textContent = stats.shoulders;
+    document.getElementById('chestCount').textContent = stats.chest;
+    document.getElementById('backCount').textContent = stats.back;
+    document.getElementById('absCount').textContent = stats.abs;
+    document.getElementById('restCount').textContent = stats.rest;
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    initializeBackground();
+    updateDayDisplay();
+});
+</script>
+</body>
+</html>

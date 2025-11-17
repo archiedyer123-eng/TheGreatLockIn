@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOCKED IN CHECKLIST</title>
+<link href="https://fonts.googleapis.com/css2?family=Aptos+Mono&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #00796b;
+        --secondary: #333;
+        --background: rgba(255, 255, 255, 0.9);
+        --text: #333;
+        --text-light: #666;
+        --completed: #dcedc8;
+        --completed-late: #fff3cd;
+        --error: #f44336;
+    }
+    body {
+        font-family: 'Aptos Mono', monospace;
+        background: url('https://cdn.imgupscaler.ai/datarm/imgupscaler/v4_upscaler/2025-11-17/output/6c7c334d-8b37-4577-82f6-05b4a8d65996.jpg') no-repeat center center fixed;
+        background-size: cover;
+        padding: 0;
+        margin: 0;
+        color: var(--text);
+        transition: background-image 0.5s ease;
+    }
+    .main-content {
+        padding: 20px;
+        margin-top: 60px;
+    }
+    .ribbon-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 50px;
+        background: rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(10px);
+        color: #fff;
+        z-index: 10;
+        overflow: hidden;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .ribbon-content {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        animation: scroll 25s linear infinite;
+        white-space: nowrap;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    @keyframes scroll {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+    }
+    .ribbon-item {
+        margin-right: 30px;
+        display: inline-flex;
+        align-items: center;
+    }
+    .weather-settings {
+        position: fixed;
+        top: 55px;
+        right: 10px;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(10px);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        display: none;
+        z-index: 1001;
+    }
+    .settings-btn {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(255,255,255,0.3);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: 'Aptos Mono', monospace;
+        z-index: 1002;
+    }
+    
+    /* Background controls */
+    .background-controls {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 1000;
+    }
+    .bg-button {
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 15px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 11px;
+        font-family: 'Aptos Mono', monospace;
+        transition: all 0.3s ease;
+        min-width: 60px;
+    }
+    .bg-button:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: scale(1.05);
+    }
+    .bg-button.active {
+        background: rgba(51, 51, 51, 0.8);
+        color: white;
+    }
+    
+    h1 { text-align: center; }
+    h2 { text-align: center; margin-top: 30px; color: var(--secondary); }
+    .late-note {
+        font-size: 11px;
+        color: #856404;
+        margin-top: 3px;
+        font-style: italic;
+        text-align: left;
+    }
+    #datePickerContainer {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    #checklist, #custom-checklist {
+        list-style: none;
+        padding: 0;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    #checklist li, #custom-checklist li {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        padding: 12px 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        font-size: 16px;
+        transition: all 0.2s ease;
+    }
+    .task-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+    #checklist li { background: var(--background); }
+    #custom-checklist li { background: #e0f7fa; }
+    input[type="text"], input[type="date"] {
+        padding: 8px;
+        width: 200px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-family: 'Aptos Mono', monospace;
+        font-size: 16px;
+        outline: none;
+    }
+    input[type="text"]:focus, input[type="date"]:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 5px rgba(0, 121, 107, 0.3);
+    }
+    input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+        cursor: pointer;
+        accent-color: var(--primary);
+    }
+    button.add-btn, button.rest-btn, button.delete-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: 'Aptos Mono', monospace;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+    button.add-btn {
+        background-color: var(--secondary);
+        color: #fff;
+    }
+    button.add-btn:hover {
+        background-color: #555;
+    }
+    button.rest-btn {
+        background-color: var(--error);
+        color: white;
+    }
+    button.rest-btn:hover {
+        background-color: #e53935;
+    }
+    button.delete-btn {
+        background-color: #777;
+        color: white;
+    }
+    button.delete-btn:hover {
+        background-color: #555;
+    }
+    a {
+        text-decoration: none;
+        color: var(--text);
+        font-family: 'Aptos Mono', monospace;
+    }
+    #logoutBtn {
+        margin: 10px auto;
+        display: block;
+        padding: 8px 18px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        background-color: #555;
+        color: white;
+        font-family: 'Aptos Mono', monospace;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+    #logoutBtn:hover {
+        background-color: var(--secondary);
+    }
+    li.completed {
+        background-color: var(--completed);
+        text-decoration: line-through;
+        opacity: 0.7;
+    }
+    li.completed-late {
+        background-color: var(--completed-late);
+        text-decoration: line-through;
+        opacity: 0.7;
+        border-left: 4px solid #ffc107;
+    }
+    @media (max-width: 600px) {
+        input[type="text"], input[type="date"] {
+            width: 150px;
+        }
+    }
+</style>
+</head>
+<body>
+<div class="ribbon-bar">
+    <div class="ribbon-content" id="ribbonContent">
+        <div class="ribbon-item" id="dateTime"></div>
+        <div class="ribbon-item" id="weather">Weather loading...</div>
+    </div>
+</div>
+<button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+<div class="weather-settings" id="weatherSettings">
+    <div>
+        <label>Location:</label>
+        <input type="text" id="locationInput" placeholder="Enter city name" style="margin: 5px; padding: 5px;">
+        <button onclick="updateWeather()" style="padding: 5px;">Update</button>
+    </div>
+</div>
+<div class="main-content">
+<h1>Welcome to the LOCKED IN CHECKLIST</h1>
+<button id="logoutBtn">Logout</button>
+<div id="datePickerContainer">
+    <label>Select Date: </label>
+    <input type="date" id="datePicker">
+</div>
+<div style="text-align:center; margin-bottom:20px;">
+    <input type="text" id="new-task" placeholder="Add your own heading">
+    <button class="add-btn" onclick="addTask()">Add</button>
+</div>
+<ul id="checklist">
+    <li>
+        <div class="task-row">
+            <div>
+                <input type="checkbox" id="checkbox-0">
+                <a href="gym.html">GYM</a>
+            </div>
+            <button class="rest-btn" onclick="markRest(0)">Rest Day</button>
+        </div>
+        <div class="late-note" id="note-0" style="display: none;"></div>
+    </li>
+    <li>
+        <div class="task-row">
+            <div>
+                <input type="checkbox" id="checkbox-1"> PROTEIN & CREATINE
+            </div>
+            <button class="rest-btn" onclick="markRest(1)">Rest Day</button>
+        </div>
+        <div class="late-note" id="note-1" style="display: none;"></div>
+    </li>
+    <li>
+        <div class="task-row">
+            <div>
+                <input type="checkbox" id="checkbox-2">
+                <a href="cardio.html">CARDIO</a>
+            </div>
+            <button class="rest-btn" onclick="markRest(2)">Rest Day</button>
+        </div>
+        <div class="late-note" id="note-2" style="display: none;"></div>
+    </li>
+    <li>
+        <div class="task-row">
+            <div>
+                <input type="checkbox" id="checkbox-3"> CHESS
+            </div>
+            <button class="rest-btn" onclick="markRest(3)">Rest Day</button>
+        </div>
+        <div class="late-note" id="note-3" style="display: none;"></div>
+    </li>
+    <li>
+        <div class="task-row">
+            <div>
+                <input type="checkbox" id="checkbox-4"> TRADING
+            </div>
+            <button class="rest-btn" onclick="markRest(4)">Rest Day</button>
+        </div>
+        <div class="late-note" id="note-4" style="display: none;"></div>
+    </li>
+</ul>
+<h2>My Additions</h2>
+<ul id="custom-checklist"></ul>
+</div>
+
+<div class="background-controls">
+    <button class="bg-button active" onclick="changeBackground(0)">Standard</button>
+    <button class="bg-button" onclick="changeBackground(1)">Summer</button>
+    <button class="bg-button" onclick="changeBackground(2)">Winter</button>
+</div>
+
+<script>
+// --- Main App Logic ---
+const currentUser = localStorage.getItem('currentUser');
+if (!currentUser) {
+    window.location.href = 'login.html';
+}
+
+// Background images array
+const backgrounds = [
+    'https://cdn.imgupscaler.ai/datarm/imgupscaler/v4_upscaler/2025-11-17/output/6c7c334d-8b37-4577-82f6-05b4a8d65996.jpg', // Standard (your current background)
+    'https://cdn.imgupscaler.ai/datarm/imgupscaler/v4_upscaler/2025-11-17/output/6c7c334d-8b37-4577-82f6-05b4a8d65996.jpg', // Summer
+    'https://cdn.imgupscaler.ai/datarm/imgupscaler/v4_upscaler/2025-11-17/output/6c7c334d-8b37-4577-82f6-05b4a8d65996.jpg'  // Winter
+];
+
+// Load saved background preference or default to 0 (Standard) - NOW GLOBAL
+let currentBgIndex = parseInt(localStorage.getItem('globalBackgroundIndex')) || 0;
+
+// Change background function with global sync
+function changeBackground(index) {
+    currentBgIndex = index;
+    document.body.style.backgroundImage = `url('${backgrounds[index]}')`;
+    
+    // Save to global preference (shared across pages)
+    localStorage.setItem('globalBackgroundIndex', index);
+    
+    // Update active button
+    document.querySelectorAll('.bg-button').forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+    });
+}
+
+// Initialize background on page load
+function initializeBackground() {
+    changeBackground(currentBgIndex);
+}
+
+// --- New Day Detection Logic ---
+function getTodayString() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function checkForNewDay() {
+    const today = getTodayString();
+    const lastVisitDate = localStorage.getItem(currentUser + '_lastVisitDate');
+    
+    console.log('=== NEW DAY CHECK ===');
+    console.log('Today is:', today);
+    console.log('Last visit was:', lastVisitDate);
+    
+    // ALWAYS set the date picker to today's date and restrict future dates
+    const datePicker = document.getElementById('datePicker');
+    if (datePicker) {
+        datePicker.value = today;
+        datePicker.max = today; // Prevent future date selection
+        console.log('Date picker set to:', today, 'with max date:', today);
+    }
+    
+    // Check if it's a new day and handle accordingly
+    if (lastVisitDate && lastVisitDate !== today) {
+        console.log('🔄 NEW DAY DETECTED! Processing...');
+        
+        // Wait a moment for DOM to be ready, then clear
+        setTimeout(() => {
+            clearAllCheckboxes();
+            // Force a refresh of the checkbox states for today (which should be empty)
+            setTimeout(() => {
+                loadCheckboxStates();
+            }, 100);
+        }, 50);
+        
+    } else if (!lastVisitDate) {
+        console.log('📅 First visit ever - setting up for today');
+    } else {
+        console.log('✅ Same day visit - keeping existing state');
+    }
+    
+    // Always update the last visit date to today
+    localStorage.setItem(currentUser + '_lastVisitDate', today);
+    console.log('=== END NEW DAY CHECK ===');
+}
+
+// Real-time midnight detection
+let currentDay = getTodayString();
+
+function checkMidnightTransition() {
+    const newDay = getTodayString();
+    
+    if (newDay !== currentDay) {
+        console.log('🌅 MIDNIGHT PASSED! New day detected:', newDay);
+        console.log('Previous day was:', currentDay);
+        
+        // Update our current day tracker
+        currentDay = newDay;
+        
+        // Update date picker to new day and restrict future dates
+        const datePicker = document.getElementById('datePicker');
+        if (datePicker) {
+            datePicker.value = newDay;
+            datePicker.max = newDay; // Update max date to new today
+            console.log('📅 Calendar updated to:', newDay, 'with max date:', newDay);
+        }
+        
+        // Clear all checkboxes for the new day
+        clearAllCheckboxes();
+        
+        // Update last visit date
+        localStorage.setItem(currentUser + '_lastVisitDate', newDay);
+        
+        // Load fresh state for new day (should be empty)
+        setTimeout(() => {
+            loadCheckboxStates();
+        }, 100);
+        
+        console.log('🎉 New day setup complete!');
+    }
+}
+
+// Check every minute for midnight transition
+function startMidnightMonitor() {
+    console.log('🕰️ Starting midnight monitor...');
+    setInterval(checkMidnightTransition, 60000); // Check every minute
+}
+
+function clearAllCheckboxes() {
+    console.log('Clearing all checkboxes...');
+    
+    // Clear main task checkboxes and styling
+    const mainCheckboxes = document.querySelectorAll('#checklist input[type="checkbox"]');
+    console.log('Found', mainCheckboxes.length, 'main checkboxes');
+    mainCheckboxes.forEach((checkbox, index) => {
+        checkbox.checked = false;
+        const li = checkbox.closest('li');
+        if (li) {
+            li.classList.remove('completed', 'completed-late');
+            li.style.textDecoration = 'none';
+            li.style.opacity = '1';
+        }
+        // Hide late notes for new day
+        const note = document.getElementById(`note-${index}`);
+        if (note) note.style.display = 'none';
+        console.log('Cleared main checkbox', index);
+    });
+    
+    // Clear custom task checkboxes and styling
+    const customCheckboxes = document.querySelectorAll('#custom-checklist input[type="checkbox"]');
+    console.log('Found', customCheckboxes.length, 'custom checkboxes');
+    customCheckboxes.forEach((checkbox, index) => {
+        checkbox.checked = false;
+        const li = checkbox.closest('li');
+        if (li) {
+            li.classList.remove('completed', 'completed-late');
+            li.style.textDecoration = 'none';
+            li.style.opacity = '1';
+        }
+        // Hide custom late notes
+        const customNote = li.querySelector('.late-note');
+        if (customNote) customNote.style.display = 'none';
+        console.log('Cleared custom checkbox', index);
+    });
+    
+    console.log('All checkboxes cleared successfully');
+}
+
+// --- Date & Progress ---
+let customTasks = JSON.parse(localStorage.getItem(currentUser + '_customTasks')) || [];
+let currentDate = new Date().toISOString().split('T')[0];
+let dateProgress = JSON.parse(localStorage.getItem(currentUser + '_dateProgress')) || {};
+
+function getCurrentDateKey() {
+    const datePicker = document.getElementById('datePicker');
+    return datePicker.value || currentDate;
+}
+
+function saveCheckboxState(taskId, isChecked, isCustom = false) {
+    const dateKey = getCurrentDateKey();
+    const today = getTodayString();
+    
+    console.log(`💾 Saving ${isCustom ? 'custom' : 'main'} task ${taskId} as ${isChecked ? 'checked' : 'unchecked'} for date: ${dateKey}`);
+    
+    if (!dateProgress[dateKey]) {
+        dateProgress[dateKey] = { main: [], custom: {}, lateCompletions: { main: {}, custom: {} } };
+        console.log(`Created new progress entry for date: ${dateKey}`);
+    }
+    
+    // Initialize late completions structure if not exists
+    if (!dateProgress[dateKey].lateCompletions) {
+        dateProgress[dateKey].lateCompletions = { main: {}, custom: {} };
+    }
+    
+    if (isCustom) {
+        dateProgress[dateKey].custom[taskId] = isChecked;
+        
+        // Check if this is a late completion (completing a past date's task while viewing that date, but it's actually a later date)
+        if (isChecked && dateKey < today) {
+            const completionDate = today;
+            dateProgress[dateKey].lateCompletions.custom[taskId] = completionDate;
+            console.log(`📝 LATE COMPLETION: Custom task ${taskId} for ${dateKey} completed late on ${completionDate}`);
+        } else if (!isChecked) {
+            // Remove late completion record if unchecked
+            delete dateProgress[dateKey].lateCompletions.custom[taskId];
+        }
+    } else {
+        dateProgress[dateKey].main[taskId] = isChecked;
+        
+        // Check if this is a late completion
+        if (isChecked && dateKey < today) {
+            const completionDate = today;
+            dateProgress[dateKey].lateCompletions.main[taskId] = completionDate;
+            console.log(`📝 LATE COMPLETION: Main task ${taskId} for ${dateKey} completed late on ${completionDate}`);
+        } else if (!isChecked) {
+            // Remove late completion record if unchecked
+            delete dateProgress[dateKey].lateCompletions.main[taskId];
+        }
+    }
+    
+    localStorage.setItem(currentUser + '_dateProgress', JSON.stringify(dateProgress));
+    
+    // Update the visual display for late completion notes
+    displayLateCompletionNote(taskId, isCustom);
+    
+    console.log('Updated dateProgress:', dateProgress[dateKey]);
+}
+
+function displayLateCompletionNote(taskId, isCustom = false) {
+    const dateKey = getCurrentDateKey();
+    const dayProgress = dateProgress[dateKey];
+    
+    if (!dayProgress || !dayProgress.lateCompletions) return;
+    
+    let noteElement;
+    let lateCompletionDate;
+    
+    if (isCustom) {
+        const li = document.querySelector(`#custom-checklist li[data-task-id="${taskId}"]`);
+        noteElement = li ? li.querySelector('.late-note') : null;
+        lateCompletionDate = dayProgress.lateCompletions.custom[taskId];
+    } else {
+        noteElement = document.getElementById(`note-${taskId}`);
+        lateCompletionDate = dayProgress.lateCompletions.main[taskId];
+    }
+    
+    if (noteElement) {
+        if (lateCompletionDate) {
+            const formattedDate = new Date(lateCompletionDate).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+            });
+            noteElement.textContent = `⏰ Completed late on ${formattedDate}`;
+            noteElement.style.display = 'block';
+            
+            // Add special styling for late completions
+            const li = noteElement.closest('li');
+            if (li) {
+                li.classList.remove('completed');
+                li.classList.add('completed-late');
+            }
+        } else {
+            noteElement.style.display = 'none';
+            
+            // Remove late styling if no longer late
+            const li = noteElement.closest('li');
+            if (li) {
+                li.classList.remove('completed-late');
+                if (li.querySelector('input[type="checkbox"]').checked) {
+                    li.classList.add('completed');
+                }
+            }
+        }
+    }
+}
+
+function loadCheckboxStates() {
+    const dateKey = getCurrentDateKey();
+    const dayProgress = dateProgress[dateKey];
+    
+    console.log('📅 Loading checkbox states for date:', dateKey);
+    console.log('Day progress data:', dayProgress);
+    
+    // First, clear ALL checkboxes and styling for this date
+    const allMainCheckboxes = document.querySelectorAll('#checklist input[type="checkbox"]');
+    allMainCheckboxes.forEach((checkbox, index) => {
+        checkbox.checked = false;
+        const li = checkbox.closest('li');
+        li.classList.remove('completed', 'completed-late');
+        li.style.textDecoration = 'none';
+        li.style.opacity = '1';
+        
+        // Hide late notes initially
+        const note = document.getElementById(`note-${index}`);
+        if (note) note.style.display = 'none';
+    });
+    
+    const allCustomCheckboxes = document.querySelectorAll('#custom-checklist input[type="checkbox"]');
+    allCustomCheckboxes.forEach((checkbox) => {
+        checkbox.checked = false;
+        const li = checkbox.closest('li');
+        li.classList.remove('completed', 'completed-late');
+        li.style.textDecoration = 'none';
+        li.style.opacity = '1';
+        
+        // Hide custom late notes
+        const customNote = li.querySelector('.late-note');
+        if (customNote) customNote.style.display = 'none';
+    });
+    
+    // Now load the specific data for this date (if any exists)
+    if (dayProgress) {
+        console.log('Found saved progress for this date');
+        
+        // Load main tasks
+        const mainCheckboxes = document.querySelectorAll('#checklist input[type="checkbox"]');
+        mainCheckboxes.forEach((checkbox, index) => {
+            if (dayProgress.main && dayProgress.main[index] !== undefined) {
+                checkbox.checked = dayProgress.main[index];
+                const li = checkbox.closest('li');
+                
+                // Check if this was a late completion
+                const isLate = dayProgress.lateCompletions && dayProgress.lateCompletions.main[index];
+                
+                if (checkbox.checked) {
+                    if (isLate) {
+                        li.classList.add('completed-late');
+                        displayLateCompletionNote(index, false);
+                    } else {
+                        li.classList.add('completed');
+                    }
+                }
+                
+                console.log(`Main task ${index}: ${checkbox.checked ? 'checked' : 'unchecked'}${isLate ? ' (late)' : ''}`);
+            }
+        });
+        
+        // Load custom tasks
+        const customCheckboxes = document.querySelectorAll('#custom-checklist input[type="checkbox"]');
+        customCheckboxes.forEach((checkbox) => {
+            const taskId = checkbox.closest('li').dataset.taskId;
+            if (dayProgress.custom && dayProgress.custom[taskId] !== undefined) {
+                checkbox.checked = dayProgress.custom[taskId];
+                const li = checkbox.closest('li');
+                
+                // Check if this was a late completion
+                const isLate = dayProgress.lateCompletions && dayProgress.lateCompletions.custom[taskId];
+                
+                if (checkbox.checked) {
+                    if (isLate) {
+                        li.classList.add('completed-late');
+                        displayLateCompletionNote(taskId, true);
+                    } else {
+                        li.classList.add('completed');
+                    }
+                }
+                
+                console.log(`Custom task ${taskId}: ${checkbox.checked ? 'checked' : 'unchecked'}${isLate ? ' (late)' : ''}`);
+            }
+        });
+    } else {
+        console.log('No saved progress found for this date - all boxes cleared');
+    }
+}
+
+// --- Task Management ---
+function addTask() {
+    const taskInput = document.getElementById('new-task');
+    const task = taskInput.value.trim();
+    if(task){
+        const taskId = 'custom-' + Date.now();
+        addTaskToDOM(task, false, taskId);
+        customTasks.push({ id: taskId, text: task });
+        localStorage.setItem(currentUser + '_customTasks', JSON.stringify(customTasks));
+        taskInput.value = '';
+    }
+}
+
+function addTaskToDOM(task, isExisting = false, taskId) {
+    const li = document.createElement('li');
+    li.dataset.taskId = taskId;
+    li.innerHTML = `
+        <div class="task-row">
+            <div>
+                <input type="checkbox">
+                ${task.text || task}
+            </div>
+            <div>
+                <button class="rest-btn" onclick="markCustomRest('${taskId}')">Rest Day</button>
+                <button class="delete-btn">Delete</button>
+            </div>
+        </div>
+        <div class="late-note" style="display: none;"></div>
+    `;
+    const ul = document.getElementById('custom-checklist');
+    ul.appendChild(li);
+    const checkbox = li.querySelector('input[type="checkbox"]');
+    checkbox.addEventListener('change', () => {
+        const isLate = dateProgress[getCurrentDateKey()] && 
+                      dateProgress[getCurrentDateKey()].lateCompletions && 
+                      dateProgress[getCurrentDateKey()].lateCompletions.custom[taskId];
+        
+        if (checkbox.checked && isLate) {
+            li.classList.remove('completed');
+            li.classList.add('completed-late');
+        } else {
+            li.classList.toggle('completed', checkbox.checked);
+            li.classList.remove('completed-late');
+        }
+        
+        saveCheckboxState(taskId, checkbox.checked, true);
+    });
+    const deleteBtn = li.querySelector('.delete-btn');
+    deleteBtn.addEventListener('click', () => {
+        const index = customTasks.findIndex(t => t.id === taskId);
+        if(index > -1) customTasks.splice(index, 1);
+        localStorage.setItem(currentUser + '_customTasks', JSON.stringify(customTasks));
+        li.remove();
+        setTimeout(loadCheckboxStates, 10);
+    });
+    if(isExisting){
+        const dateKey = getCurrentDateKey();
+        if (dateProgress[dateKey] && dateProgress[dateKey].custom && dateProgress[dateKey].custom[taskId]) {
+            checkbox.checked = dateProgress[dateKey].custom[taskId];
+            
+            const isLate = dateProgress[dateKey].lateCompletions && dateProgress[dateKey].lateCompletions.custom[taskId];
+            if (checkbox.checked) {
+                if (isLate) {
+                    li.classList.add('completed-late');
+                    displayLateCompletionNote(taskId, true);
+                } else {
+                    li.classList.add('completed');
+                }
+            }
+        }
+    }
+}
+
+function markRest(index) {
+    const li = document.getElementById('checklist').children[index];
+    const checkbox = li.querySelector('input[type="checkbox"]');
+    checkbox.checked = true;
+    
+    // Check if this would be a late completion
+    const dateKey = getCurrentDateKey();
+    const today = getTodayString();
+    
+    if (dateKey < today) {
+        li.classList.add('completed-late');
+    } else {
+        li.classList.add('completed');
+    }
+    
+    saveCheckboxState(index, true);
+}
+
+function markCustomRest(taskId) {
+    const li = document.querySelector(`#custom-checklist li[data-task-id="${taskId}"]`);
+    const checkbox = li.querySelector('input[type="checkbox"]');
+    checkbox.checked = true;
+    
+    // Check if this would be a late completion
+    const dateKey = getCurrentDateKey();
+    const today = getTodayString();
+    
+    if (dateKey < today) {
+        li.classList.add('completed-late');
+    } else {
+        li.classList.add('completed');
+    }
+    
+    saveCheckboxState(taskId, true, true);
+}
+
+// --- UI & Event Listeners ---
+function updateDateTime() {
+    const now = new Date();
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    };
+    document.getElementById('dateTime').textContent =
+        `📅 ${now.toLocaleDateString('en-US', options)}`;
+}
+
+async function fetchWeather(location) {
+    try {
+        const API_KEY = 'af5cf506f2f1471846f7798be1b52f04';
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${API_KEY}&units=metric`;
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.main) {
+            document.getElementById('weather').textContent =
+                `🌡️ ${data.main.temp}°C in ${data.name}`;
+        } else {
+            document.getElementById('weather').textContent = 'Weather not found';
+        }
+    } catch (error) {
+        console.error(error);
+        document.getElementById('weather').textContent = 'Error fetching weather';
+    }
+}
+
+function toggleSettings() {
+    const settings = document.getElementById('weatherSettings');
+    settings.style.display = settings.style.display === 'block' ? 'none' : 'block';
+}
+
+function updateWeather() {
+    const locationInput = document.getElementById('locationInput').value;
+    if(locationInput){
+        localStorage.setItem(currentUser + '_location', locationInput);
+        fetchWeather(locationInput);
+    }
+}
+
+function initializeLocationInput() {
+    const locationInput = document.getElementById('locationInput');
+    const userLocation = localStorage.getItem(currentUser + '_location') || 'London';
+    locationInput.value = userLocation;
+    fetchWeather(userLocation);
+}
+
+function setLocalDate() {
+    const today = getTodayString();
+    const datePicker = document.getElementById('datePicker');
+    if (datePicker) {
+        datePicker.value = today;
+        datePicker.max = today; // Prevent selecting future dates
+        console.log('setLocalDate: Date picker set to', today, 'with max date:', today);
+    }
+}
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('currentUser');
+    window.location.href = 'login.html';
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded - Initializing...');
+    
+    // First, ensure we're on today's date
+    checkForNewDay();
+    
+    // Set up main checkbox event listeners
+    const mainCheckboxes = document.querySelectorAll('#checklist input[type="checkbox"]');
+    mainCheckboxes.forEach((checkbox, index) => {
+        checkbox.addEventListener('change', () => {
+            const li = checkbox.closest('li');
+            const dateKey = getCurrentDateKey();
+            const today = getTodayString();
+            
+            // Check if this would be a late completion
+            const isLate = dateKey < today && checkbox.checked;
+            
+            li.classList.remove('completed', 'completed-late');
+            
+            if (checkbox.checked) {
+                if (isLate) {
+                    li.classList.add('completed-late');
+                } else {
+                    li.classList.add('completed');
+                }
+            }
+            
+            saveCheckboxState(index, checkbox.checked);
+        });
+    });
+    
+    // Load states after everything is set up
+    setTimeout(() => {
+        loadCheckboxStates();
+    }, 100);
+});
+
+document.getElementById('datePicker').addEventListener('change', function() {
+    const selectedDate = this.value;
+    const today = getTodayString();
+    
+    console.log('📅 Date picker changed to:', selectedDate);
+    
+    // Check if trying to select a future date
+    if (selectedDate > today) {
+        console.log('❌ Future date selected! Reverting to today:', today);
+        this.value = today; // Revert to today
+        alert('You cannot select future dates!');
+        return;
+    }
+    
+    console.log('✅ Valid date selected. Loading checkbox states...');
+    loadCheckboxStates();
+});
+
+// --- Initialize ---
+console.log('Starting initialization...');
+customTasks.forEach((task) => addTaskToDOM(task, true, task.id));
+setInterval(updateDateTime, 1000);
+initializeLocationInput();
+initializeBackground();
+
+// Start the midnight monitor
+startMidnightMonitor();
+
+// Run initialization after DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM ready - running final initialization');
+        checkForNewDay();
+        loadCheckboxStates();
+    });
+} else {
+    // DOM is already ready
+    console.log('DOM already ready - running initialization immediately');
+    checkForNewDay();
+    loadCheckboxStates();
+}
+</script>
+</body>
+</html>
