@@ -927,19 +927,21 @@ if (document.readyState === 'loading') {
         console.log('DOM ready - running final initialization');
         checkForNewDay();
         loadCheckboxStates();
-        syncFromCloud();
+        startRealtimeSync();
     });
 } else {
     console.log('DOM already ready - running initialization immediately');
     checkForNewDay();
     loadCheckboxStates();
-    syncFromCloud();
+    startRealtimeSync();
 }
 
-// ---- CLOUD SYNC HELPERS ----
+let isApplyingRemoteUpdate = false;
 let cloudSaveTimeout = null;
 
 function scheduleCloudSave() {
+    if (isApplyingRemoteUpdate) return;
+
     clearTimeout(cloudSaveTimeout);
     cloudSaveTimeout = setTimeout(syncToCloud, 1000);
 }
@@ -1009,6 +1011,54 @@ async function syncFromCloud() {
     } catch (err) {
         console.error('❌ Error syncing from cloud', err);
     }
+}
+function startRealtimeSync() {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) return;
+
+    db.collection('users').doc(currentUser)
+        .onSnapshot((docSnap) => {
+            if (!docSnap.exists) return;
+
+            const data = docSnap.data().appState;
+            if (!data) return;
+
+            console.log('📡 Real-time update from cloud:', data);
+
+            // Tell the app we are applying a remote update
+            isApplyingRemoteUpdate = true;
+
+            // --- same logic as syncFromCloud had ---
+            if (data.customTasks) {
+                customTasks = data.customTasks;
+                localStorage.setItem(currentUser + '_customTasks', JSON.stringify(customTasks));
+            }
+
+            if (data.dateProgress) {
+                dateProgress = data.dateProgress;
+                localStorage.setItem(currentUser + '_dateProgress', JSON.stringify(dateProgress));
+            }
+
+            if (data.location) {
+                localStorage.setItem(currentUser + '_location', data.location);
+            }
+
+            if (data.lastVisitDate) {
+                localStorage.setItem(currentUser + '_lastVisitDate', data.lastVisitDate);
+            }
+
+            if (typeof data.globalBackgroundIndex !== 'undefined') {
+                localStorage.setItem('globalBackgroundIndex', data.globalBackgroundIndex);
+                currentBgIndex = data.globalBackgroundIndex;
+            }
+
+            rebuildUIFromLocal();
+
+            // Done applying remote changes — re-enable saving
+            isApplyingRemoteUpdate = false;
+        }, (err) => {
+            console.error('❌ Real-time listener error:', err);
+        });
 }
 
 function rebuildUIFromLocal() {
