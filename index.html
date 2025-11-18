@@ -328,6 +328,27 @@
     <button class="bg-button" onclick="changeBackground(2)">Winter</button>
 </div>
 
+<!-- 🔥 Firebase SDK + config added here -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA7ni6-_f9RdfkNzgxLOnjSs_4mqx6UF0w",
+  authDomain: "thegreatlockin-52959.firebaseapp.com",
+  projectId: "thegreatlockin-52959",
+  storageBucket: "thegreatlockin-52959.firebasestorage.app",
+  messagingSenderId: "182993286746",
+  appId: "1:182993286746:web:481aa971d71a25c26f0a63",
+  measurementId: "G-7B9W9HW30Q"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+const db = firebase.firestore();
+</script>
+
 <script>
 // --- Main App Logic ---
 const currentUser = localStorage.getItem('currentUser');
@@ -381,22 +402,18 @@ function checkForNewDay() {
     console.log('Today is:', today);
     console.log('Last visit was:', lastVisitDate);
     
-    // ALWAYS set the date picker to today's date and restrict future dates
     const datePicker = document.getElementById('datePicker');
     if (datePicker) {
         datePicker.value = today;
-        datePicker.max = today; // Prevent future date selection
+        datePicker.max = today;
         console.log('Date picker set to:', today, 'with max date:', today);
     }
     
-    // Check if it's a new day and handle accordingly
     if (lastVisitDate && lastVisitDate !== today) {
         console.log('🔄 NEW DAY DETECTED! Processing...');
         
-        // Wait a moment for DOM to be ready, then clear
         setTimeout(() => {
             clearAllCheckboxes();
-            // Force a refresh of the checkbox states for today (which should be empty)
             setTimeout(() => {
                 loadCheckboxStates();
             }, 100);
@@ -408,7 +425,6 @@ function checkForNewDay() {
         console.log('✅ Same day visit - keeping existing state');
     }
     
-    // Always update the last visit date to today
     localStorage.setItem(currentUser + '_lastVisitDate', today);
     console.log('=== END NEW DAY CHECK ===');
 }
@@ -423,24 +439,19 @@ function checkMidnightTransition() {
         console.log('🌅 MIDNIGHT PASSED! New day detected:', newDay);
         console.log('Previous day was:', currentDay);
         
-        // Update our current day tracker
         currentDay = newDay;
         
-        // Update date picker to new day and restrict future dates
         const datePicker = document.getElementById('datePicker');
         if (datePicker) {
             datePicker.value = newDay;
-            datePicker.max = newDay; // Update max date to new today
+            datePicker.max = newDay;
             console.log('📅 Calendar updated to:', newDay, 'with max date:', newDay);
         }
         
-        // Clear all checkboxes for the new day
         clearAllCheckboxes();
         
-        // Update last visit date
         localStorage.setItem(currentUser + '_lastVisitDate', newDay);
         
-        // Load fresh state for new day (should be empty)
         setTimeout(() => {
             loadCheckboxStates();
         }, 100);
@@ -449,16 +460,14 @@ function checkMidnightTransition() {
     }
 }
 
-// Check every minute for midnight transition
 function startMidnightMonitor() {
     console.log('🕰️ Starting midnight monitor...');
-    setInterval(checkMidnightTransition, 60000); // Check every minute
+    setInterval(checkMidnightTransition, 60000);
 }
 
 function clearAllCheckboxes() {
     console.log('Clearing all checkboxes...');
     
-    // Clear main task checkboxes and styling
     const mainCheckboxes = document.querySelectorAll('#checklist input[type="checkbox"]');
     console.log('Found', mainCheckboxes.length, 'main checkboxes');
     mainCheckboxes.forEach((checkbox, index) => {
@@ -469,13 +478,11 @@ function clearAllCheckboxes() {
             li.style.textDecoration = 'none';
             li.style.opacity = '1';
         }
-        // Hide late notes for new day
         const note = document.getElementById(`note-${index}`);
         if (note) note.style.display = 'none';
         console.log('Cleared main checkbox', index);
     });
     
-    // Clear custom task checkboxes and styling
     const customCheckboxes = document.querySelectorAll('#custom-checklist input[type="checkbox"]');
     console.log('Found', customCheckboxes.length, 'custom checkboxes');
     customCheckboxes.forEach((checkbox, index) => {
@@ -486,7 +493,6 @@ function clearAllCheckboxes() {
             li.style.textDecoration = 'none';
             li.style.opacity = '1';
         }
-        // Hide custom late notes
         const customNote = li.querySelector('.late-note');
         if (customNote) customNote.style.display = 'none';
         console.log('Cleared custom checkbox', index);
@@ -545,7 +551,6 @@ function saveCheckboxState(taskId, isChecked, isCustom = false) {
     localStorage.setItem(currentUser + '_dateProgress', JSON.stringify(dateProgress));
     displayLateCompletionNote(taskId, isCustom);
 
-    // 🔹 NEW: save to cloud as well
     scheduleCloudSave();
 
     console.log('Updated dateProgress:', dateProgress[dateKey]);
@@ -579,7 +584,6 @@ function displayLateCompletionNote(taskId, isCustom = false) {
             noteElement.textContent = `⏰ Completed late on ${formattedDate}`;
             noteElement.style.display = 'block';
             
-            // Add special styling for late completions
             const li = noteElement.closest('li');
             if (li) {
                 li.classList.remove('completed');
@@ -588,7 +592,6 @@ function displayLateCompletionNote(taskId, isCustom = false) {
         } else {
             noteElement.style.display = 'none';
             
-            // Remove late styling if no longer late
             const li = noteElement.closest('li');
             if (li) {
                 li.classList.remove('completed-late');
@@ -607,7 +610,6 @@ function loadCheckboxStates() {
     console.log('📅 Loading checkbox states for date:', dateKey);
     console.log('Day progress data:', dayProgress);
     
-    // First, clear ALL checkboxes and styling for this date
     const allMainCheckboxes = document.querySelectorAll('#checklist input[type="checkbox"]');
     allMainCheckboxes.forEach((checkbox, index) => {
         checkbox.checked = false;
@@ -616,7 +618,6 @@ function loadCheckboxStates() {
         li.style.textDecoration = 'none';
         li.style.opacity = '1';
         
-        // Hide late notes initially
         const note = document.getElementById(`note-${index}`);
         if (note) note.style.display = 'none';
     });
@@ -629,23 +630,19 @@ function loadCheckboxStates() {
         li.style.textDecoration = 'none';
         li.style.opacity = '1';
         
-        // Hide custom late notes
         const customNote = li.querySelector('.late-note');
         if (customNote) customNote.style.display = 'none';
     });
     
-    // Now load the specific data for this date (if any exists)
     if (dayProgress) {
         console.log('Found saved progress for this date');
         
-        // Load main tasks
         const mainCheckboxes = document.querySelectorAll('#checklist input[type="checkbox"]');
         mainCheckboxes.forEach((checkbox, index) => {
             if (dayProgress.main && dayProgress.main[index] !== undefined) {
                 checkbox.checked = dayProgress.main[index];
                 const li = checkbox.closest('li');
                 
-                // Check if this was a late completion
                 const isLate = dayProgress.lateCompletions && dayProgress.lateCompletions.main[index];
                 
                 if (checkbox.checked) {
@@ -661,7 +658,6 @@ function loadCheckboxStates() {
             }
         });
         
-        // Load custom tasks
         const customCheckboxes = document.querySelectorAll('#custom-checklist input[type="checkbox"]');
         customCheckboxes.forEach((checkbox) => {
             const taskId = checkbox.closest('li').dataset.taskId;
@@ -669,7 +665,6 @@ function loadCheckboxStates() {
                 checkbox.checked = dayProgress.custom[taskId];
                 const li = checkbox.closest('li');
                 
-                // Check if this was a late completion
                 const isLate = dayProgress.lateCompletions && dayProgress.lateCompletions.custom[taskId];
                 
                 if (checkbox.checked) {
@@ -700,11 +695,9 @@ function addTask() {
         localStorage.setItem(currentUser + '_customTasks', JSON.stringify(customTasks));
         taskInput.value = '';
 
-        // 🔹 sync new custom task
         scheduleCloudSave();
     }
 }
-
 
 function addTaskToDOM(task, isExisting = false, taskId) {
     const li = document.createElement('li');
@@ -772,7 +765,6 @@ function markRest(index) {
     const checkbox = li.querySelector('input[type="checkbox"]');
     checkbox.checked = true;
     
-    // Check if this would be a late completion
     const dateKey = getCurrentDateKey();
     const today = getTodayString();
     
@@ -790,7 +782,6 @@ function markCustomRest(taskId) {
     const checkbox = li.querySelector('input[type="checkbox"]');
     checkbox.checked = true;
     
-    // Check if this would be a late completion
     const dateKey = getCurrentDateKey();
     const today = getTodayString();
     
@@ -862,7 +853,7 @@ function setLocalDate() {
     const datePicker = document.getElementById('datePicker');
     if (datePicker) {
         datePicker.value = today;
-        datePicker.max = today; // Prevent selecting future dates
+        datePicker.max = today;
         console.log('setLocalDate: Date picker set to', today, 'with max date:', today);
     }
 }
@@ -875,10 +866,8 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded - Initializing...');
     
-    // First, ensure we're on today's date
     checkForNewDay();
     
-    // Set up main checkbox event listeners
     const mainCheckboxes = document.querySelectorAll('#checklist input[type="checkbox"]');
     mainCheckboxes.forEach((checkbox, index) => {
         checkbox.addEventListener('change', () => {
@@ -886,7 +875,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const dateKey = getCurrentDateKey();
             const today = getTodayString();
             
-            // Check if this would be a late completion
             const isLate = dateKey < today && checkbox.checked;
             
             li.classList.remove('completed', 'completed-late');
@@ -903,7 +891,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Load states after everything is set up
     setTimeout(() => {
         loadCheckboxStates();
     }, 100);
@@ -915,10 +902,9 @@ document.getElementById('datePicker').addEventListener('change', function() {
     
     console.log('📅 Date picker changed to:', selectedDate);
     
-    // Check if trying to select a future date
     if (selectedDate > today) {
         console.log('❌ Future date selected! Reverting to today:', today);
-        this.value = today; // Revert to today
+        this.value = today;
         alert('You cannot select future dates!');
         return;
     }
@@ -934,39 +920,33 @@ setInterval(updateDateTime, 1000);
 initializeLocationInput();
 initializeBackground();
 
-// Start the midnight monitor
 startMidnightMonitor();
 
-// Run initialization after DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM ready - running final initialization');
         checkForNewDay();
         loadCheckboxStates();
-        syncFromCloud();   // 🔹 pull data from cloud on load
+        syncFromCloud();
     });
 } else {
-    // DOM is already ready
     console.log('DOM already ready - running initialization immediately');
     checkForNewDay();
     loadCheckboxStates();
-    syncFromCloud();       // 🔹 same here
+    syncFromCloud();
 }
 
 // ---- CLOUD SYNC HELPERS ----
-
-// debounce timer
 let cloudSaveTimeout = null;
 
-// Call this whenever something changes (checkbox, custom task, background, etc.)
 function scheduleCloudSave() {
     clearTimeout(cloudSaveTimeout);
-    cloudSaveTimeout = setTimeout(syncToCloud, 1000); // 1s debounce
+    cloudSaveTimeout = setTimeout(syncToCloud, 1000);
 }
 
 async function syncToCloud() {
     const currentUser = localStorage.getItem('currentUser');
-    if (!currentUser) return; // not logged in
+    if (!currentUser) return;
 
     const appState = {
         customTasks: customTasks,
@@ -976,10 +956,12 @@ async function syncToCloud() {
         globalBackgroundIndex: parseInt(localStorage.getItem('globalBackgroundIndex')) || 0
     };
 
+    console.log('🔼 syncToCloud appState:', appState);
+
     try {
         await db.collection('users').doc(currentUser).set(
             { appState: appState },
-            { merge: true } // don’t overwrite password
+            { merge: true }
         );
         console.log('✅ Synced to cloud');
     } catch (err) {
@@ -989,7 +971,7 @@ async function syncToCloud() {
 
 async function syncFromCloud() {
     const currentUser = localStorage.getItem('currentUser');
-    if (!currentUser) return; // not logged in
+    if (!currentUser) return;
 
     try {
         const docSnap = await db.collection('users').doc(currentUser).get();
@@ -998,7 +980,6 @@ async function syncFromCloud() {
         const data = docSnap.data().appState;
         if (!data) return;
 
-        // Restore into memory + localStorage
         if (data.customTasks) {
             customTasks = data.customTasks;
             localStorage.setItem(currentUser + '_customTasks', JSON.stringify(customTasks));
@@ -1022,7 +1003,6 @@ async function syncFromCloud() {
             currentBgIndex = data.globalBackgroundIndex;
         }
 
-        // Rebuild UI from restored data
         rebuildUIFromLocal();
 
         console.log('✅ Synced from cloud');
@@ -1032,19 +1012,16 @@ async function syncFromCloud() {
 }
 
 function rebuildUIFromLocal() {
-    // Rebuild custom tasks list
     const ul = document.getElementById('custom-checklist');
     if (ul) {
         ul.innerHTML = '';
         customTasks.forEach((task) => addTaskToDOM(task, true, task.id));
     }
 
-    // Reapply background, location, checkboxes
     initializeBackground();
     initializeLocationInput();
     loadCheckboxStates();
 }
-
 </script>
 </body>
 </html>
