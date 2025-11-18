@@ -24,6 +24,17 @@
         margin: 0;
         color: var(--text);
         transition: background-image 0.5s ease;
+        body {
+    /* existing stuff… */
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+body.page-loaded {
+    opacity: 1;
+    transform: translateY(0);
+}
+
     }
     .main-content {
         padding: 20px;
@@ -241,6 +252,21 @@
             width: 150px;
         }
     }
+    .card-appear {
+    animation: cardIn 0.35s ease forwards;
+}
+
+@keyframes cardIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 </style>
 </head>
 <body>
@@ -873,6 +899,15 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded - Initializing...');
     
     checkForNewDay();
+        // Smooth page + card entrance
+    document.body.classList.add('page-loaded');
+
+    const allLis = document.querySelectorAll('#checklist li, #custom-checklist li');
+    allLis.forEach((li, index) => {
+        li.classList.add('card-appear');
+        li.style.animationDelay = `${index * 80}ms`;
+    });
+
     
     const mainCheckboxes = document.querySelectorAll('#checklist input[type="checkbox"]');
     mainCheckboxes.forEach((checkbox, index) => {
