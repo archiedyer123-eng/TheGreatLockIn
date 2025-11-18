@@ -350,10 +350,13 @@ const db = firebase.firestore();
 
 
 <script>
+
 // --- Main App Logic ---
-// TEMP: hard-code a user id so all devices use the same Firestore doc
-const currentUser = 'demoUser';
-// If you want to keep login later, we can wire this back up properly.
+const currentUser = localStorage.getItem('currentUser');
+if (!currentUser) {
+    window.location.href = 'login.html';
+}
+
 
 // Background images array
 const backgrounds = [
