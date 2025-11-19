@@ -5,95 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login - LOCK IN CHECKLIST</title>
 <style>
-    :root {
-        /* main palette (standard) */
-        --bg1: #070707;
-        --bg2: #40434E;
-        --bg3: #A28497;
-
-        --panel-bg: rgba(12, 12, 18, 0.78);
-        --panel-border: rgba(198, 202, 237, 0.5);
-        --accent-1: #C6CAED;
-        --accent-2: #A28497;
-        --muted: #ADA8BE;
-        --text-main: #FFFFFF;
-        --text-muted: #C6CAED;
-    }
-
-    /* animated gradient background */
     body { 
         font-family: 'Aptos Mono', monospace; 
-        margin: 0;
-        height: 100vh;
+        background: #40434E;
+        background-size: 111%;
         display: flex; 
         justify-content: center; 
         align-items: center; 
-        color: var(--text-main);
-        background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
-        background-size: 200% 200%;
-        animation: bgShift 22s ease-in-out infinite;
-        transition: background 0.6s ease;
+        height: 100vh; 
+        margin: 0;
+        transition: background-image 0.5s ease;
     }
 
-    /* theme variations (buttons switch these) */
-    body.theme-standard {
-        --bg1: #070707;
-        --bg2: #40434E;
-        --bg3: #A28497;
-    }
-    body.theme-summer {
-        --bg1: #F3D8C7;
-        --bg2: #A28497;
-        --bg3: #40434E;
-    }
-    body.theme-winter {
-        --bg1: #C6CAED;
-        --bg2: #ADA8BE;
-        --bg3: #40434E;
-    }
-
-    @keyframes bgShift {
-        0%   { background-position: 0% 50%; }
-        50%  { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-
-    /* sleek login box */
     .login-box { 
-        background: var(--panel-bg); 
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        padding: 20px 18px; 
-        border-radius: 18px; 
-        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6); 
-        width: 230px;                 /* smaller box */
-        border: 1px solid var(--panel-border);
+        background: rgba(255, 255, 255, 0.75); 
+        backdrop-filter: none;
+        padding: 16px; 
+        border-radius: 15px; 
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
+        width: 190px; 
+        border: 1px solid rgba(255, 255, 255, 0.3);
         position: relative;
     }
 
-    .app-title {
+    h2 {
         text-align: center;
-        margin: 0 0 4px 0;
-        color: var(--accent-1);
-        font-weight: 700;
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: bold;
         font-size: 18px;
-        white-space: nowrap;          /* keep on one line */
-    }
-
-    .app-subtitle {
-        text-align: center;
-        margin: 0 0 18px 0;
-        font-size: 11px;
-        color: var(--text-muted);
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-    }
-
-    .section-title {
-        margin: 0 0 10px 0;
-        font-size: 13px;
-        color: var(--accent-1);
-        text-align: left;
+        white-space: nowrap; /* one line */
     }
 
     .background-controls {
@@ -106,135 +47,101 @@
     }
 
     .bg-button {
-        background: rgba(18, 18, 26, 0.9);
-        color: var(--text-main);
-        border: 1px solid rgba(198, 202, 237, 0.5);
-        border-radius: 999px;
-        padding: 7px 14px;
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 15px;
+        padding: 8px 12px;
         cursor: pointer;
         font-size: 11px;
         font-family: 'Aptos Mono', monospace;
-        transition: all 0.25s ease;
-        min-width: 88px;
-        text-align: center;
+        transition: all 0.3s ease;
+        min-width: 60px;
     }
 
     .bg-button:hover {
-        background: var(--accent-2);
-        border-color: var(--accent-1);
-        transform: translateY(-1px) scale(1.02);
+        background: rgba(255, 255, 255, 0.9);
+        transform: scale(1.05);
     }
 
     .bg-button.active {
-        background: var(--accent-1);
-        color: #070707;
-        border-color: transparent;
-        transform: translateY(-1px) scale(1.03);
+        background: rgba(51, 51, 51, 0.8);
+        color: white;
     }
 
     input { 
         width: 100%; 
-        padding: 9px 11px; 
-        margin: 7px 0 0 0; 
-        border-radius: 9px; 
-        border: 1px solid rgba(173, 168, 190, 0.9);
-        background: rgba(7, 7, 10, 0.85);
-        color: var(--text-main);
+        padding: 12px; 
+        margin: 10px 0; 
+        border-radius: 8px; 
+        border: 1px solid rgba(204, 204, 204, 0.6);
+        background: rgba(255, 255, 255, 0.9);
         box-sizing: border-box;
-        font-size: 13px;
-    }
-
-    input::placeholder {
-        color: var(--text-muted);
-        font-size: 12px;
+        font-size: 14px;
     }
 
     input:focus {
         outline: none;
-        border-color: var(--accent-1);
-        background: rgba(7, 7, 10, 1);
-        box-shadow: 0 0 0 1px rgba(198, 202, 237, 0.4);
+        border-color: #333;
+        background: rgba(255, 255, 255, 1);
     }
 
-    .form-group {
-        margin-bottom: 10px;
-    }
-
-    button.main-btn { 
+    button { 
         width: 100%; 
-        padding: 10px; 
+        padding: 12px; 
         border: none; 
-        border-radius: 10px; 
-        background: var(--accent-2); 
-        color: #070707; 
+        border-radius: 8px; 
+        background-color: #333; 
+        color: white; 
         cursor: pointer;
-        font-size: 14px;
-        font-weight: 700;
-        transition: background 0.25s ease, transform 0.1s ease, box-shadow 0.25s ease;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
         box-sizing: border-box;
-        margin-top: 12px;
     }
 
-    button.main-btn:hover { 
-        background: var(--accent-1); 
-        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
-        transform: translateY(-1px);
+    button:hover { 
+        background-color: #555; 
     }
 
     p { 
         text-align: center; 
-        margin-top: 12px;
-        color: var(--text-muted);
-        font-size: 12px;
+        margin-top: 15px;
+        color: #333;
     }
 
     a { 
-        color: var(--accent-1); 
+        color: #333; 
         text-decoration: none; 
-        font-weight: 600;
-        transition: color 0.25s ease;
+        font-weight: bold;
+        transition: color 0.3s ease;
     }
 
     a:hover {
-        color: var(--accent-2);
+        color: #555;
         text-decoration: underline;
     }
 
     #signup {
-        margin-top: 8px;
-        border-top: 1px solid rgba(198, 202, 237, 0.25);
-        padding-top: 12px;
+        margin-top: 20px;
     }
 </style>
 </head>
-<body class="theme-standard">
+<body>
+
 <div class="login-box">
-    <h1 class="app-title">The Great Lock In</h1>
-    <p class="app-subtitle">Locked in checklist</p>
+    <h2>The Great Lock In</h2>
 
-    <h3 class="section-title" id="login-title">Login</h3>
-
-    <div id="login-form">
-        <div class="form-group">
-            <input type="text" id="username" placeholder="Username">
-        </div>
-        <div class="form-group">
-            <input type="password" id="password" placeholder="Password">
-        </div>
-        <button class="main-btn" onclick="login()">Login</button>
-        <p>or <a href="#" onclick="showSignup(); return false;">Create an account</a></p>
-    </div>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p>or <a href="#" onclick="showSignup()">Sign Up</a></p>
     
     <div id="signup" style="display:none;">
-        <h3 class="section-title">Sign up</h3>
-        <div class="form-group">
-            <input type="text" id="new-username" placeholder="New username">
-        </div>
-        <div class="form-group">
-            <input type="password" id="new-password" placeholder="New password">
-        </div>
-        <button class="main-btn" onclick="signup()">Create account</button>
-        <p>or <a href="#" onclick="showLogin(); return false;">Back to login</a></p>
+        <h2>Sign Up</h2>
+        <input type="text" id="new-username" placeholder="New Username">
+        <input type="password" id="new-password" placeholder="New Password">
+        <button onclick="signup()">Create Account</button>
+        <p>or <a href="#" onclick="showLogin()">Login</a></p>
     </div>
 </div>
 
@@ -249,7 +156,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
 <script>
-// --- Firebase config (your project) ---
 const firebaseConfig = {
   apiKey: "AIzaSyA7ni6-_f9RdfkNzgxLOnjSs_4mqx6UF0w",
   authDomain: "thegreatlockin-52959.firebaseapp.com",
@@ -265,44 +171,45 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 
-/* ------------------ BACKGROUND THEMES ---------------------- */
-const themes = ['theme-standard', 'theme-summer', 'theme-winter'];
-let currentBgIndex = parseInt(localStorage.getItem('globalBackgroundIndex')) || 0;
+const backgrounds = [
+    'Screenshot 2025-08-14 192943_imgupscaler.ai_General_4K.jpg',
+    'Screenshot 2025-08-14 192943_imgupscaler.ai_General_4K.jpg',
+    'Screenshot 2025-08-14 192943_imgupscaler.ai_General_4K.jpg'
+];
 
-function applyTheme(index) {
-    document.body.classList.remove(...themes);
-    document.body.classList.add(themes[index]);
-}
+let currentBgIndex = parseInt(localStorage.getItem('globalBackgroundIndex')) || 0;
 
 function changeBackground(index) {
     currentBgIndex = index;
-    applyTheme(index);
+    document.body.style.backgroundImage = `url('${backgrounds[index]}')`;
     localStorage.setItem('globalBackgroundIndex', index);
-
     document.querySelectorAll('.bg-button').forEach((btn, i) => {
         btn.classList.toggle('active', i === index);
     });
 }
 
 function initializeBackground() {
-    applyTheme(currentBgIndex);
-    document.querySelectorAll('.bg-button').forEach((btn, i) => {
-        btn.classList.toggle('active', i === currentBgIndex);
-    });
+    changeBackground(currentBgIndex);
 }
 
-/* ------------------ UI TOGGLE ---------------------- */
 function showSignup() { 
     document.getElementById('signup').style.display = 'block'; 
-    document.getElementById('login-form').style.display = 'none';
+    document.querySelector('h2').style.display = 'none';
+    document.getElementById('username').style.display = 'none';
+    document.getElementById('password').style.display = 'none';
+    document.querySelector('button[onclick="login()"]').style.display = 'none';
+    document.querySelector('.login-box > p').style.display = 'none';
 }
 
 function showLogin() { 
     document.getElementById('signup').style.display = 'none';
-    document.getElementById('login-form').style.display = 'block';
+    document.querySelector('h2').style.display = 'block';
+    document.getElementById('username').style.display = 'block';
+    document.getElementById('password').style.display = 'block';
+    document.querySelector('button[onclick="login()"]').style.display = 'block';
+    document.querySelector('.login-box > p').style.display = 'block';
 }
 
-/* ------------------ SIMPLE HASH ---------------------- */
 function hashPassword(password) {
     let hash = 0;
     for (let i = 0; i < password.length; i++) {
@@ -312,7 +219,6 @@ function hashPassword(password) {
     return hash.toString();
 }
 
-/* ------------------ SIGNUP (Firestore) ---------------------- */
 async function signup() {
     let user = document.getElementById('new-username').value.trim().toLowerCase();
     let pass = document.getElementById('new-password').value;
@@ -345,7 +251,6 @@ async function signup() {
     }
 }
 
-/* ------------------ LOGIN (Firestore) ---------------------- */
 async function login() {
     let user = document.getElementById('username').value.trim().toLowerCase();
     let pass = document.getElementById('password').value;
@@ -380,7 +285,6 @@ async function login() {
     }
 }
 
-/* ------------------ ON LOAD + ENTER KEYS ---------------------- */
 window.addEventListener('load', function() {
     document.getElementById('username').focus();
     initializeBackground();
@@ -388,28 +292,24 @@ window.addEventListener('load', function() {
 
 document.getElementById('username').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
-        event.preventDefault();
         document.getElementById('password').focus();
     }
 });
 
 document.getElementById('password').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
-        event.preventDefault();
         login();
     }
 });
 
 document.getElementById('new-username').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
-        event.preventDefault();
         document.getElementById('new-password').focus();
     }
 });
 
 document.getElementById('new-password').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
-        event.preventDefault();
         signup();
     }
 });
