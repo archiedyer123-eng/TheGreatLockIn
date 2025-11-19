@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login - LOCK IN CHECKLIST</title>
 
-<!-- Optional cool font for the banner -->
+<!-- Banner font -->
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 
 <style>
@@ -19,41 +19,65 @@
         height: 100vh; 
         margin: 0;
         transition: background-image 0.5s ease;
+        position: relative;
+        overflow: hidden;
     }
 
-.top-banner {
-    width: 100%;
-    text-align: center;
-    padding: 28px 0;
-    font-size: 48px;
-    font-weight: 900;
-    color: #fffb9a;
-    letter-spacing: 6px;
-    font-family: 'Orbitron', sans-serif;
-    position: absolute;
-    top: 20px;
-    left: 0;
-    z-index: 10;
+    /* 🔒 THE GREAT LOCK IN – LUXURY NEON BANNER */
+    .top-banner {
+        width: 100%;
+        text-align: center;
+        padding: 26px 0;
+        font-size: 44px;
+        font-weight: 900;
+        letter-spacing: 7px;
+        font-family: 'Orbitron', sans-serif;
+        position: absolute;
+        top: 22px;                  /* slightly down from top */
+        left: 0;
+        z-index: 10;
 
-    /* ⭐ REDUCED BUT STILL STRONG GLOW ⭐ */
-    text-shadow:
-        0 0 6px #ffea62,
-        0 0 12px #ffe346,
-        0 0 20px #ffda33,
-        0 0 30px #ffd400,
-        0 0 45px #ffcc00,
-        0 0 60px #ffcc00;
-}
+        /* Gold gradient text */
+        background: linear-gradient(90deg, #fffbe6, #ffd94d, #fffbe6);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
 
+        /* Refined neon glow */
+        text-shadow:
+            0 0 6px rgba(255, 244, 188, 0.9),
+            0 0 12px rgba(255, 222, 130, 0.8),
+            0 0 22px rgba(255, 205, 70, 0.7),
+            0 0 34px rgba(255, 190, 40, 0.6),
+            0 0 46px rgba(255, 180, 0, 0.5);
+
+    }
+
+    /* Glowing underline / aura bar */
+    .top-banner::after {
+        content: "";
+        display: block;
+        width: 40%;
+        max-width: 700px;
+        height: 3px;
+        margin: 10px auto 0;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(255, 230, 150, 0.95), rgba(255, 200, 0, 0.0));
+        box-shadow:
+            0 0 16px rgba(255, 230, 150, 0.9),
+            0 0 32px rgba(255, 210, 80, 0.7);
+    }
 
     .login-box { 
-        background: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.6);  /* still light + focused */
+        backdrop-filter: blur(6px);            /* frosted glass effect */
+        -webkit-backdrop-filter: blur(6px);
         padding: 12px 26px;
         border-radius: 15px; 
-        box-shadow: 0 6px 24px rgba(0,0,0,0.25); 
+        box-shadow: 0 10px 28px rgba(0,0,0,0.35); 
         width: 57%;
         max-width: 360px;
-        border: 1px solid rgba(255, 255, 255, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.35);
         position: relative;
         margin-top: 120px;
     }
@@ -74,28 +98,31 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+        z-index: 5;
     }
 
     .bg-button {
-        background: rgba(255, 255, 255, 0.8);
-        border: none;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.35);
         border-radius: 15px;
         padding: 8px 12px;
         cursor: pointer;
         font-size: 11px;
         font-family: 'Aptos Mono', monospace;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
         min-width: 60px;
+        color: #f8f8f8;
     }
 
     .bg-button:hover {
-        background: rgba(255, 255, 255, 0.9);
-        transform: scale(1.05);
+        background: rgba(0, 0, 0, 0.6);
+        transform: translateY(-1px) scale(1.03);
     }
 
     .bg-button.active {
-        background: rgba(51, 51, 51, 0.8);
-        color: white;
+        background: rgba(255, 204, 0, 0.9);
+        color: #222;
+        border-color: rgba(255, 236, 179, 0.9);
     }
 
     input { 
@@ -103,15 +130,16 @@
         padding: 12px; 
         margin: 10px 0; 
         border-radius: 8px; 
-        border: 1px solid rgba(204, 204, 204, 0.6);
-        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(204, 204, 204, 0.8);
+        background: rgba(255, 255, 255, 0.95);
         box-sizing: border-box;
         font-size: 14px;
     }
 
     input:focus {
         outline: none;
-        border-color: #333;
+        border-color: #ffcc33;
+        box-shadow: 0 0 0 2px rgba(255, 204, 51, 0.25);
         background: rgba(255, 255, 255, 1);
     }
 
@@ -120,17 +148,23 @@
         padding: 12px; 
         border: none; 
         border-radius: 8px; 
-        background-color: #333; 
+        background-color: #222; 
         color: white; 
         cursor: pointer;
         font-size: 16px;
-        font-weight: bold;
-        transition: background-color 0.3s ease;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: background-color 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease, color 0.25s ease;
         box-sizing: border-box;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
     }
 
     button:hover { 
-        background-color: #555; 
+        background-color: #ffcc33;
+        color: #222;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
     }
 
     p { 
@@ -143,11 +177,11 @@
         color: #333; 
         text-decoration: none; 
         font-weight: bold;
-        transition: color 0.3s ease;
+        transition: color 0.2s ease;
     }
 
     a:hover {
-        color: #555;
+        color: #ffcc33;
         text-decoration: underline;
     }
 
@@ -158,7 +192,6 @@
 </head>
 <body>
 
-<!-- ⭐ ADD THIS BANNER ⭐ -->
 <div class="top-banner">THE GREAT LOCK IN</div>
 
 <div class="login-box">
