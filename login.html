@@ -23,7 +23,7 @@
         overflow: hidden;
     }
 
-    /* BANNER – reverted glow style you liked */
+    /* BANNER with glow */
     .top-banner {
         width: 100%;
         text-align: center;
@@ -34,10 +34,9 @@
         letter-spacing: 6px;
         font-family: 'Orbitron', sans-serif;
         position: absolute;
-        top: 20px;
+        top: 35px;                  /* shifted down a bit */
         left: 0;
         z-index: 10;
-
         text-shadow:
             0 0 6px #ffea62,
             0 0 12px #ffe346,
@@ -45,6 +44,42 @@
             0 0 30px #ffd400,
             0 0 45px #ffcc00,
             0 0 60px #ffcc00;
+    }
+
+    /* Thin, animated smoke behind the title */
+    .top-banner::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 115%;
+        height: 170%;
+        background:
+            radial-gradient(ellipse at center,
+                rgba(255, 255, 255, 0.18) 0%,
+                rgba(255, 255, 255, 0.08) 25%,
+                transparent 65%);
+        opacity: 0.35;
+        filter: blur(10px);
+        z-index: -1;
+        pointer-events: none;
+        animation: smokeMove 14s infinite linear;
+    }
+
+    @keyframes smokeMove {
+        0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.32;
+        }
+        50% {
+            transform: translate(-52%, -48%) scale(1.05);
+            opacity: 0.46;
+        }
+        100% {
+            transform: translate(-50%, -52%) scale(1);
+            opacity: 0.32;
+        }
     }
 
     /* Underline aura – kept */
@@ -62,7 +97,7 @@
             0 0 32px rgba(255, 210, 80, 0.7);
     }
 
-    /* LOGIN BOX – reverted to your older version */
+    /* LOGIN BOX – your older version, just moved down a bit */
     .login-box { 
         background: rgba(255, 255, 255, 0.6);
         padding: 12px 26px;
@@ -72,7 +107,7 @@
         max-width: 360px;
         border: 1px solid rgba(255, 255, 255, 0.25);
         position: relative;
-        margin-top: 120px;
+        margin-top: 140px;          /* shifted down slightly */
     }
 
     h2 {
@@ -94,7 +129,7 @@
         z-index: 5;
     }
 
-    /* Background buttons – styled, kept */
+    /* Background buttons */
     .bg-button {
         background: rgba(0, 0, 0, 0.35);
         border: 1px solid rgba(255, 255, 255, 0.35);
@@ -137,7 +172,7 @@
         background: rgba(255, 255, 255, 1);
     }
 
-    /* Login button – new style you liked */
+    /* Login button */
     button { 
         width: 100%; 
         padding: 12px; 
