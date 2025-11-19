@@ -7,7 +7,7 @@
 <style>
     body { 
         font-family: 'Aptos Mono', monospace; 
-        background: #40434E;
+        background: hotpink;
         background-size: 111%;
         display: flex; 
         justify-content: center; 
@@ -16,16 +16,27 @@
         margin: 0;
         transition: background-image 0.5s ease;
     }
+
     .login-box { 
         background: rgba(255, 255, 255, 0.75); 
         backdrop-filter: none;
-        padding: 20px; 
+        padding: 16px; 
         border-radius: 15px; 
         box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
-        width: 220px;
+        width: 190px; 
         border: 1px solid rgba(255, 255, 255, 0.3);
         position: relative;
     }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: bold;
+        font-size: 18px;
+        white-space: nowrap; /* one line */
+    }
+
     .background-controls {
         position: fixed;
         bottom: 20px;
@@ -34,6 +45,7 @@
         flex-direction: column;
         gap: 8px;
     }
+
     .bg-button {
         background: rgba(255, 255, 255, 0.8);
         border: none;
@@ -45,20 +57,17 @@
         transition: all 0.3s ease;
         min-width: 60px;
     }
+
     .bg-button:hover {
         background: rgba(255, 255, 255, 0.9);
         transform: scale(1.05);
     }
+
     .bg-button.active {
         background: rgba(51, 51, 51, 0.8);
         color: white;
     }
-    h2 {
-        text-align: center;
-        margin-bottom: 20px;
-        color: #333;
-        font-weight: bold;
-    }
+
     input { 
         width: 100%; 
         padding: 12px; 
@@ -69,11 +78,13 @@
         box-sizing: border-box;
         font-size: 14px;
     }
+
     input:focus {
         outline: none;
         border-color: #333;
         background: rgba(255, 255, 255, 1);
     }
+
     button { 
         width: 100%; 
         padding: 12px; 
@@ -87,30 +98,36 @@
         transition: background-color 0.3s ease;
         box-sizing: border-box;
     }
+
     button:hover { 
         background-color: #555; 
     }
+
     p { 
         text-align: center; 
         margin-top: 15px;
         color: #333;
     }
+
     a { 
         color: #333; 
         text-decoration: none; 
         font-weight: bold;
         transition: color 0.3s ease;
     }
+
     a:hover {
         color: #555;
         text-decoration: underline;
     }
+
     #signup {
         margin-top: 20px;
     }
 </style>
 </head>
 <body>
+
 <div class="login-box">
     <h2>The Great Lock In</h2>
 
@@ -139,7 +156,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
 <script>
-// --- Firebase config (your project) ---
 const firebaseConfig = {
   apiKey: "AIzaSyA7ni6-_f9RdfkNzgxLOnjSs_4mqx6UF0w",
   authDomain: "thegreatlockin-52959.firebaseapp.com",
@@ -155,7 +171,6 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 
-// Background images array
 const backgrounds = [
     'Screenshot 2025-08-14 192943_imgupscaler.ai_General_4K.jpg',
     'Screenshot 2025-08-14 192943_imgupscaler.ai_General_4K.jpg',
@@ -177,7 +192,6 @@ function initializeBackground() {
     changeBackground(currentBgIndex);
 }
 
-// Show/hide signup
 function showSignup() { 
     document.getElementById('signup').style.display = 'block'; 
     document.querySelector('h2').style.display = 'none';
@@ -196,7 +210,6 @@ function showLogin() {
     document.querySelector('.login-box > p').style.display = 'block';
 }
 
-// Simple hash (same for signup + login)
 function hashPassword(password) {
     let hash = 0;
     for (let i = 0; i < password.length; i++) {
@@ -206,7 +219,6 @@ function hashPassword(password) {
     return hash.toString();
 }
 
-/* ------------------ SIGNUP (Firestore) ---------------------- */
 async function signup() {
     let user = document.getElementById('new-username').value.trim().toLowerCase();
     let pass = document.getElementById('new-password').value;
@@ -217,7 +229,6 @@ async function signup() {
     }
 
     try {
-        console.log("[SIGNUP] for:", user);
         const userRef = db.collection("users").doc(user);
         const docSnap = await userRef.get();
 
@@ -227,7 +238,6 @@ async function signup() {
         }
 
         const hashed = hashPassword(pass);
-        console.log("[SIGNUP] hashed:", hashed);
 
         await userRef.set({
             password: hashed,
@@ -237,12 +247,10 @@ async function signup() {
         alert("Account created for: " + user + ". Please login.");
         showLogin();
     } catch (err) {
-        console.error("[SIGNUP] Error:", err);
         alert("Signup error: " + err.message);
     }
 }
 
-/* ------------------ LOGIN (Firestore) ---------------------- */
 async function login() {
     let user = document.getElementById('username').value.trim().toLowerCase();
     let pass = document.getElementById('password').value;
@@ -253,7 +261,6 @@ async function login() {
     }
 
     try {
-        console.log("[LOGIN] for:", user);
         const userRef = db.collection("users").doc(user);
         const docSnap = await userRef.get();
 
@@ -266,9 +273,6 @@ async function login() {
         const storedPassword = data.password;
         const hashed = hashPassword(pass);
 
-        console.log("[LOGIN] stored:", storedPassword);
-        console.log("[LOGIN] input :", hashed);
-
         if (storedPassword !== hashed) {
             alert("Password incorrect for user: " + user);
             return;
@@ -277,42 +281,35 @@ async function login() {
         localStorage.setItem('currentUser', user);
         window.location.href = "index.html";
     } catch (err) {
-        console.error("[LOGIN] Error:", err);
         alert("Login error: " + err.message);
     }
 }
 
-// Auto-focus login username on page load
 window.addEventListener('load', function() {
     document.getElementById('username').focus();
     initializeBackground();
 });
 
-// Enter key helpers
 document.getElementById('username').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
-        event.preventDefault();
         document.getElementById('password').focus();
     }
 });
 
 document.getElementById('password').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
-        event.preventDefault();
         login();
     }
 });
 
 document.getElementById('new-username').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
-        event.preventDefault();
         document.getElementById('new-password').focus();
     }
 });
 
 document.getElementById('new-password').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
-        event.preventDefault();
         signup();
     }
 });
