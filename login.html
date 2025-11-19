@@ -5,40 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login - LOCK IN CHECKLIST</title>
 <style>
-    :root {
-        --bg-main: #070707;          /* page background */
-        --panel-bg: rgba(64,67,78,0.92); /* login box */
-        --accent-1: #C6CAED;         /* main accent (buttons, highlights) */
-        --accent-2: #A28497;         /* secondary accent */
-        --muted: #ADA8BE;            /* subtle borders / hover */
-        --text-main: #FFFFFF;
-        --text-muted: #C6CAED;
-    }
-
     body { 
         font-family: 'Aptos Mono', monospace; 
-        background-color: var(--bg-main);
-        background-size: cover;
+        background: hotpink;
+        background-size: 111%;
         display: flex; 
         justify-content: center; 
         align-items: center; 
         height: 100vh; 
         margin: 0;
-        color: var(--text-main);
-        transition: background-color 0.5s ease;
+        transition: background-image 0.5s ease;
     }
-
     .login-box { 
-        background: var(--panel-bg); 
-        backdrop-filter: blur(10px);
-        padding: 24px; 
-        border-radius: 18px; 
-        box-shadow: 0 8px 32px rgba(0,0,0,0.5); 
-        width: 240px;
-        border: 1px solid rgba(198,202,237,0.5);
+        background: rgba(255, 255, 255, 0.75); 
+        backdrop-filter: none;
+        padding: 20px; 
+        border-radius: 15px; 
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
+        width: 220px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
         position: relative;
     }
-
     .background-controls {
         position: fixed;
         bottom: 20px;
@@ -47,103 +34,81 @@
         flex-direction: column;
         gap: 8px;
     }
-
     .bg-button {
-        background: rgba(64,67,78,0.95);
-        color: var(--text-main);
-        border: 1px solid rgba(198,202,237,0.6);
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
         border-radius: 15px;
         padding: 8px 12px;
         cursor: pointer;
         font-size: 11px;
         font-family: 'Aptos Mono', monospace;
         transition: all 0.3s ease;
-        min-width: 80px;
+        min-width: 60px;
     }
-
     .bg-button:hover {
-        background: var(--accent-2);
-        border-color: var(--accent-1);
+        background: rgba(255, 255, 255, 0.9);
         transform: scale(1.05);
     }
-
     .bg-button.active {
-        background: var(--accent-1);
-        color: #070707;
-        border-color: transparent;
+        background: rgba(51, 51, 51, 0.8);
+        color: white;
     }
-
     h2 {
         text-align: center;
         margin-bottom: 20px;
-        color: var(--accent-1);
+        color: #333;
         font-weight: bold;
     }
-
     input { 
         width: 100%; 
-        padding: 10px 12px; 
+        padding: 12px; 
         margin: 10px 0; 
         border-radius: 8px; 
-        border: 1px solid rgba(173,168,190,0.8);
-        background: rgba(7,7,7,0.8);
-        color: var(--text-main);
+        border: 1px solid rgba(204, 204, 204, 0.6);
+        background: rgba(255, 255, 255, 0.9);
         box-sizing: border-box;
         font-size: 14px;
     }
-
-    input::placeholder {
-        color: var(--text-muted);
-    }
-
     input:focus {
         outline: none;
-        border-color: var(--accent-1);
-        background: rgba(7,7,7,1);
+        border-color: #333;
+        background: rgba(255, 255, 255, 1);
     }
-
     button { 
         width: 100%; 
         padding: 12px; 
         border: none; 
         border-radius: 8px; 
-        background: var(--accent-2); 
-        color: #070707; 
+        background-color: #333; 
+        color: white; 
         cursor: pointer;
-        font-size: 15px;
+        font-size: 16px;
         font-weight: bold;
-        transition: background 0.3s ease, transform 0.1s ease;
+        transition: background-color 0.3s ease;
         box-sizing: border-box;
     }
-
     button:hover { 
-        background: var(--accent-1); 
-        transform: translateY(-1px);
+        background-color: #555; 
     }
-
     p { 
         text-align: center; 
         margin-top: 15px;
-        color: var(--text-muted);
+        color: #333;
     }
-
     a { 
-        color: var(--accent-1); 
+        color: #333; 
         text-decoration: none; 
         font-weight: bold;
         transition: color 0.3s ease;
     }
-
     a:hover {
-        color: var(--accent-2);
+        color: #555;
         text-decoration: underline;
     }
-
     #signup {
         margin-top: 20px;
     }
 </style>
-
 </head>
 <body>
 <div class="login-box">
