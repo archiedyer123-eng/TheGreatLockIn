@@ -46,39 +46,60 @@
             0 0 60px #ffcc00;
     }
 
-    /* Thin, animated smoke behind the title */
+    /* Much more visible, patchy smoke behind the title */
     .top-banner::before {
         content: "";
         position: absolute;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: 115%;
-        height: 170%;
+        width: 140%;
+        height: 260%;
+        /* multiple soft blobs = patches of smoke */
         background:
-            radial-gradient(ellipse at center,
-                rgba(255, 255, 255, 0.18) 0%,
-                rgba(255, 255, 255, 0.08) 25%,
-                transparent 65%);
-        opacity: 0.35;
-        filter: blur(10px);
+            radial-gradient(circle at 20% 35%,
+                rgba(255, 255, 255, 0.32) 0%,
+                rgba(255, 255, 255, 0.16) 22%,
+                transparent 60%),
+            radial-gradient(circle at 65% 30%,
+                rgba(255, 255, 255, 0.28) 0%,
+                rgba(255, 255, 255, 0.14) 24%,
+                transparent 65%),
+            radial-gradient(circle at 80% 70%,
+                rgba(255, 255, 255, 0.24) 0%,
+                rgba(255, 255, 255, 0.12) 22%,
+                transparent 60%),
+            radial-gradient(circle at 35% 75%,
+                rgba(255, 255, 255, 0.20) 0%,
+                rgba(255, 255, 255, 0.10) 20%,
+                transparent 55%);
+        opacity: 0.55;
+        filter: blur(14px);
         z-index: -1;
         pointer-events: none;
-        animation: smokeMove 14s infinite linear;
+        animation: smokeDrift 18s infinite ease-in-out alternate;
     }
 
-    @keyframes smokeMove {
+    @keyframes smokeDrift {
         0% {
             transform: translate(-50%, -50%) scale(1);
-            opacity: 0.32;
+            opacity: 0.45;
+        }
+        25% {
+            transform: translate(-52%, -51%) scale(1.05);
+            opacity: 0.60;
         }
         50% {
-            transform: translate(-52%, -48%) scale(1.05);
-            opacity: 0.46;
+            transform: translate(-49%, -48%) scale(1.03);
+            opacity: 0.38;
+        }
+        75% {
+            transform: translate(-51%, -52%) scale(1.06);
+            opacity: 0.62;
         }
         100% {
-            transform: translate(-50%, -52%) scale(1);
-            opacity: 0.32;
+            transform: translate(-50%, -50%) scale(1.02);
+            opacity: 0.42;
         }
     }
 
@@ -97,17 +118,17 @@
             0 0 32px rgba(255, 210, 80, 0.7);
     }
 
-    /* LOGIN BOX – your older version, just moved down a bit */
+    /* LOGIN BOX – same style, just a bit smaller */
     .login-box { 
         background: rgba(255, 255, 255, 0.6);
-        padding: 12px 26px;
+        padding: 10px 22px;
         border-radius: 15px; 
         box-shadow: 0 6px 24px rgba(0,0,0,0.25); 
-        width: 57%;
-        max-width: 360px;
+        width: 52%;              /* was 57% – now slightly smaller */
+        max-width: 330px;        /* was 360px */
         border: 1px solid rgba(255, 255, 255, 0.25);
         position: relative;
-        margin-top: 140px;          /* shifted down slightly */
+        margin-top: 140px;       /* already shifted down */
     }
 
     h2 {
