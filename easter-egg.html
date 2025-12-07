@@ -2,58 +2,343 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>LOCKED IN – Secret Garage</title>
+  <title>Working Towards Monaco</title>
   <link href="https://fonts.googleapis.com/css2?family=Aptos+Mono&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --space-indigo: #22223B;
+      --dusty-grape: #4A4E69;
+      --lilac-ash:   #9A8C98;
+      --almond-silk: #C9ADA7;
+      --parchment:   #F2E9E4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Aptos Mono', monospace;
-      background: radial-gradient(circle at top, #ff1744 0, #000 55%);
-      color: #f5f5f5;
-      height: 100vh;
-      margin: 0;
+      min-height: 100vh;
+      color: var(--space-indigo);
+      background:
+        radial-gradient(circle at top left, rgba(154,140,152,0.25) 0, transparent 55%),
+        radial-gradient(circle at bottom right, rgba(74,78,105,0.22) 0, transparent 55%),
+        linear-gradient(135deg, var(--parchment) 0%, var(--almond-silk) 45%, var(--parchment) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
+      padding: 32px 16px;
     }
-    .box {
-      padding: 24px 32px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.25);
-      background: rgba(0,0,0,0.85);
-      box-shadow: 0 0 26px rgba(0,0,0,0.7);
-      max-width: 520px;
+
+    .shell {
+      max-width: 1000px;
+      width: 100%;
+      background: rgba(242,233,228,0.85);
+      border-radius: 24px;
+      padding: 26px 30px 28px;
+      box-shadow:
+        0 18px 40px rgba(34,34,59,0.25),
+        0 0 0 1px rgba(34,34,59,0.12);
+      position: relative;
+      overflow: hidden;
     }
-    h1 {
+
+    /* subtle “Monaco strip” accent */
+    .shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        120deg,
+        transparent 0,
+        transparent 45%,
+        rgba(34,34,59,0.04) 46%,
+        rgba(34,34,59,0.04) 54%,
+        transparent 55%,
+        transparent 100%
+      );
+      pointer-events: none;
+      mix-blend-mode: multiply;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .title-block h1 {
+      font-size: 26px;
       letter-spacing: 2px;
-      margin-bottom: 10px;
-    }
-    p {
-      margin: 5.5px 0;
-    }
-    .tagline {
-      font-size: 12px;
-      opacity: 0.8;
-      margin-top: 10px;
       text-transform: uppercase;
     }
-    a {
-      color: #ff5252;
-      text-decoration: none;
-      border-bottom: 1px dashed #ff5252;
+
+    .title-block span {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(34,34,59,0.6);
     }
-    a:hover {
-      text-decoration: underline;
+
+    .tag-chip {
+      align-self: flex-start;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+      background: rgba(34,34,59,0.07);
+      border: 1px solid rgba(34,34,59,0.15);
+      color: rgba(34,34,59,0.8);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+      gap: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card {
+      background: rgba(249,244,240,0.95);
+      border-radius: 18px;
+      padding: 16px 18px 18px;
+      border: 1px solid rgba(154,140,152,0.35);
+      box-shadow: 0 8px 16px rgba(34,34,59,0.09);
+    }
+
+    .card h2 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+      color: rgba(34,34,59,0.75);
+      margin-bottom: 8px;
+    }
+
+    .card small {
+      font-size: 11px;
+      color: rgba(34,34,59,0.65);
+    }
+
+    .numbers-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      border: 1px solid rgba(74,78,105,0.4);
+      background: rgba(74,78,105,0.06);
+      color: rgba(34,34,59,0.9);
+    }
+
+    .pill span {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      color: rgba(34,34,59,0.65);
+    }
+
+    .list {
+      margin-top: 6px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: rgba(34,34,59,0.9);
+    }
+
+    .list li {
+      margin: 3px 0;
+    }
+
+    .list li::marker {
+      color: var(--dusty-grape);
+    }
+
+    .side-highlight {
+      border-radius: 18px;
+      padding: 16px 16px 14px;
+      background: linear-gradient(
+        150deg,
+        rgba(74,78,105,0.20),
+        rgba(34,34,59,0.8)
+      );
+      color: #FDFBFF;
+      box-shadow: 0 10px 20px rgba(34,34,59,0.55);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .side-highlight::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(249,244,240,0.4) 0, transparent 55%);
+      mix-blend-mode: screen;
+      opacity: 0.7;
+    }
+
+    .side-highlight h2 {
+      color: #FDFBFF;
+      margin-bottom: 4px;
+    }
+
+    .side-highlight p {
+      font-size: 13px;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+
+    .side-meta {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+
+    .side-meta span {
+      display: inline-block;
+    }
+
+    .badge {
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(242,233,228,0.2);
+      border: 1px solid rgba(242,233,228,0.6);
+    }
+
+    footer {
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: rgba(34,34,59,0.6);
+      position: relative;
+      z-index: 1;
+    }
+
+    footer a {
+      color: rgba(34,34,59,0.7);
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(34,34,59,0.35);
+      padding-bottom: 1px;
+    }
+
+    footer a:hover {
+      color: var(--dusty-grape);
+      border-bottom-style: solid;
+    }
+
+    @media (max-width: 780px) {
+      .shell {
+        padding: 22px 18px 22px;
+      }
+
+      header {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      footer {
+        flex-direction: column;
+        gap: 6px;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>YOU HIT THE FERRARI.</h1>
-    <p>Welcome to the secret LOCKED IN page.</p>
-    <p>Use this space for private goals, thoughts, quotes, or anything you don’t want on the main list.</p>
-    <p class="tagline">What happens in the garage stays in the garage.</p>
-    <p style="margin-top:18px;"><a href="index.html">⬅ Back to checklist</a></p>
+  <div class="shell">
+    <header>
+      <div class="title-block">
+        <h1>Working Towards Monaco</h1>
+        <span>Every day moves the grid slot closer</span>
+      </div>
+      <div class="tag-chip">
+        Monaco Objective · Private View
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT: Goals & Inputs -->
+      <section class="card">
+        <h2>Targets</h2>
+        <small>(edit these numbers to match what Monaco looks like for you)</small>
+
+        <div class="numbers-row">
+          <div class="pill">
+            <span>Capital Goal</span>
+            £ 000,000
+          </div>
+          <div class="pill">
+            <span>Monthly Income</span>
+            £ 00,000 / mo
+          </div>
+          <div class="pill">
+            <span>Timeline</span>
+            20XX Season
+          </div>
+        </div>
+
+        <h2 style="margin-top:16px;">Non-Negotiables</h2>
+        <ul class="list">
+          <li>Daily deep work on skills that compound.</li>
+          <li>No zero-effort days (something for health, money, or mind).</li>
+          <li>Inputs over outcomes – judge the day by actions, not results.</li>
+        </ul>
+
+        <h2 style="margin-top:16px;">When I Am There</h2>
+        <ul class="list">
+          <li>Balcony with a view over the harbour / hairpin.</li>
+          <li>Walks down to the water before markets open.</li>
+          <li>Friends flying in for race week, not surprised that I made it.</li>
+        </ul>
+      </section>
+
+      <!-- RIGHT: Motivation / Snapshot -->
+      <aside class="side-highlight">
+        <h2>Snapshot From Today</h2>
+        <p>
+          Write a one-line snapshot of where you are right now:
+          a sentence you’ll read back from Monaco and smile at.
+        </p>
+
+        <div class="side-meta">
+          <span class="badge">Today’s reality</span>
+          <span>→ Future: balcony in Fontvieille</span>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <span>Palette · Space Indigo · Dusty Grape · Lilac Ash · Almond Silk · Parchment</span>
+      <a href="index.html">Back to LOCKED IN checklist</a>
+    </footer>
   </div>
 </body>
 </html>
