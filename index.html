@@ -1056,35 +1056,71 @@
   </script>
 
   <!-- 🔴 FERRARI SECRET HITBOX SCRIPT -->
-  <script>
-    (function () {
-      document.addEventListener('click', function (e) {
-        // Ignore clicks on interactive UI so normal behaviour still works
-        const interactive = e.target.closest(
-          'button, input, textarea, select, a, label, .task-row, .background-controls, .ribbon-bar, .weather-settings'
-        );
-        if (interactive) return;
+  <!-- 🔴 FERRARI SECRET HITBOX SCRIPT (tighter hitbox) -->
+<script>
+  (function () {
+    // Tweak these four numbers to fine-tune the clickable zone
+    const hitbox = {
+      left: 0.84,   // 0 = far left, 1 = far right
+      right: 0.97,
+      top: 0.32,    // 0 = very top, 1 = very bottom
+      bottom: 0.70
+    };
 
-        // Position of click as percentage of viewport
-        const xPercent = e.clientX / window.innerWidth;   // 0 = left, 1 = right
-        const yPercent = e.clientY / window.innerHeight;  // 0 = top,  1 = bottom
+    const LOG_CLICKS = false;   // set to true if you want to see coords in console
+    const SHOW_DEBUG_BOX = false; // set to true to see the hitbox rectangle on screen
 
-        /*
-          Approx Ferrari area:
-          - Right side of screen (x between 0.70 and 0.98)
-          - Middle vertical band (y between 0.25 and 0.70)
+    let debugBox = null;
 
-          If it feels off, tweak the numbers slightly.
-        */
-        const inFerrariZone =
-          xPercent > 0.70 && xPercent < 0.98 &&
-          yPercent > 0.25 && yPercent < 0.70;
+    function createOrUpdateDebugBox() {
+      if (!SHOW_DEBUG_BOX) return;
+      if (!debugBox) {
+        debugBox = document.createElement('div');
+        debugBox.style.position = 'fixed';
+        debugBox.style.zIndex = '9999';
+        debugBox.style.border = '1px dashed rgba(255,0,0,0.8)';
+        debugBox.style.pointerEvents = 'none';
+        document.body.appendChild(debugBox);
+      }
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      debugBox.style.left = (hitbox.left * w) + 'px';
+      debugBox.style.top = (hitbox.top * h) + 'px';
+      debugBox.style.width = ((hitbox.right - hitbox.left) * w) + 'px';
+      debugBox.style.height = ((hitbox.bottom - hitbox.top) * h) + 'px';
+    }
 
-        if (inFerrariZone) {
-          window.location.href = 'easter-egg.html';
-        }
-      });
-    })();
-  </script>
+    if (SHOW_DEBUG_BOX) {
+      createOrUpdateDebugBox();
+      window.addEventListener('resize', createOrUpdateDebugBox);
+    }
+
+    document.addEventListener('click', function (e) {
+      // Ignore normal UI clicks
+      const interactive = e.target.closest(
+        'button, input, textarea, select, a, label, .task-row, .background-controls, .ribbon-bar, .weather-settings'
+      );
+      if (interactive) return;
+
+      const xPercent = e.clientX / window.innerWidth;
+      const yPercent = e.clientY / window.innerHeight;
+
+      if (LOG_CLICKS) {
+        console.log('Click:', xPercent.toFixed(2), yPercent.toFixed(2));
+      }
+
+      const inFerrariZone =
+        xPercent > hitbox.left &&
+        xPercent < hitbox.right &&
+        yPercent > hitbox.top &&
+        yPercent < hitbox.bottom;
+
+      if (inFerrariZone) {
+        window.location.href = 'easter-egg.html';
+      }
+    });
+  })();
+</script>
+
 </body>
 </html>
