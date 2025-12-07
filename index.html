@@ -20,9 +20,8 @@
 
     body {
       font-family: 'Aptos Mono', monospace;
-     background: url('Screenshot 2025-08-28 221941_imgupscaler.ai_General_8K.jpg') no-repeat center center fixed;
-background-size: cover;
-
+      background: url('Screenshot 2025-08-28 221941_imgupscaler.ai_General_8K.jpg') no-repeat center center fixed;
+      background-size: cover;
       padding: 0;
       margin: 0;
       color: var(--text);
@@ -453,11 +452,10 @@ background-size: cover;
 
     // Background images array
     const backgrounds = [
-  'Screenshot 2025-08-28 221941_imgupscaler.ai_General_8K.jpg',
-  'Screenshot 2025-08-28 221941_imgupscaler.ai_General_8K.jpg',
-  'Screenshot 2025-08-28 221941_imgupscaler.ai_General_8K.jpg'
-];
-
+      'Screenshot 2025-08-28 221941_imgupscaler.ai_General_8K.jpg',
+      'Screenshot 2025-08-28 221941_imgupscaler.ai_General_8K.jpg',
+      'Screenshot 2025-08-28 221941_imgupscaler.ai_General_8K.jpg'
+    ];
 
     let currentBgIndex = parseInt(localStorage.getItem('globalBackgroundIndex')) || 0;
 
@@ -1056,6 +1054,37 @@ background-size: cover;
       loadCheckboxStates();
     }
   </script>
+
+  <!-- 🔴 FERRARI SECRET HITBOX SCRIPT -->
+  <script>
+    (function () {
+      document.addEventListener('click', function (e) {
+        // Ignore clicks on interactive UI so normal behaviour still works
+        const interactive = e.target.closest(
+          'button, input, textarea, select, a, label, .task-row, .background-controls, .ribbon-bar, .weather-settings'
+        );
+        if (interactive) return;
+
+        // Position of click as percentage of viewport
+        const xPercent = e.clientX / window.innerWidth;   // 0 = left, 1 = right
+        const yPercent = e.clientY / window.innerHeight;  // 0 = top,  1 = bottom
+
+        /*
+          Approx Ferrari area:
+          - Right side of screen (x between 0.70 and 0.98)
+          - Middle vertical band (y between 0.25 and 0.70)
+
+          If it feels off, tweak the numbers slightly.
+        */
+        const inFerrariZone =
+          xPercent > 0.70 && xPercent < 0.98 &&
+          yPercent > 0.25 && yPercent < 0.70;
+
+        if (inFerrariZone) {
+          window.location.href = 'easter-egg.html';
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
-
