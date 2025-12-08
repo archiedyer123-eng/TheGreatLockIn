@@ -481,37 +481,37 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
     </section>
   </main>
 
-<section class="bottom-section">
-  <div>
-    <h3>Live Account Stats</h3>
-    <p id="statsPlaceholder">
-      Connect your FXBlue widget link to see your funded account stats here.
-    </p>
-    <iframe
-      id="statsIframe"
-      src=""
-      width="100%"
-      height="260"
-      style="border:none; border-radius: 12px; overflow:hidden; display:none;">
-    </iframe>
-  </div>
+  <!-- 🔢 LIVE STATS + WIDGET CONFIG (PER USER) -->
+  <section class="bottom-section">
+    <div>
+      <h3>Live Account Stats</h3>
+      <p id="statsPlaceholder">
+        Connect your FXBlue widget link to see your funded account stats here.
+      </p>
+      <iframe
+        id="statsIframe"
+        src=""
+        width="100%"
+        height="260"
+        style="border:none; border-radius: 12px; overflow:hidden; display:none;">
+      </iframe>
+    </div>
 
-  <div>
-    <p style="margin-bottom:6px;">Connect Trading Stats (FXBlue)</p>
-    <input
-      type="text"
-      id="widgetUrlInput"
-      placeholder="Paste your FXBlue widget URL"
-      style="width:100%; max-width:260px; padding:6px 8px; border-radius:8px; border:1px solid rgba(255,255,255,0.25); background:rgba(0,0,0,0.4); color:#fff; font-size:0.75rem;">
-    <button
-      id="saveWidgetBtn"
-      style="margin-top:6px; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.25); background:rgba(0,0,0,0.6); color:#fff; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; cursor:pointer;">
-      Save Link
-    </button>
-    <div id="widgetSaveStatus" style="margin-top:4px; font-size:0.7rem; opacity:0.8;"></div>
-  </div>
-</section>
-
+    <div>
+      <p style="margin-bottom:6px;">Connect Trading Stats (FXBlue)</p>
+      <input
+        type="text"
+        id="widgetUrlInput"
+        placeholder="Paste your FXBlue widget URL"
+        style="width:100%; max-width:260px; padding:6px 8px; border-radius:8px; border:1px solid rgba(255,255,255,0.25); background:rgba(0,0,0,0.4); color:#fff; font-size:0.75rem;">
+      <button
+        id="saveWidgetBtn"
+        style="margin-top:6px; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.25); background:rgba(0,0,0,0.6); color:#fff; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; cursor:pointer;">
+        Save Link
+      </button>
+      <div id="widgetSaveStatus" style="margin-top:4px; font-size:0.7rem; opacity:0.8;"></div>
+    </div>
+  </section>
 
   <!-- EXPANDED NOTE OVERLAY -->
   <div class="note-overlay" id="noteOverlay">
@@ -534,6 +534,89 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
     </div>
   </div>
 
+  <!-- 🔥 Firebase (same project as index) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA7ni6-_f9RdfkNzgxLOnjSs_4mqx6UF0w",
+      authDomain: "thegreatlockin-52959.firebaseapp.com",
+      projectId: "thegreatlockin-52959",
+      storageBucket: "thegreatlockin-52959.firebasestorage.app",
+      messagingSenderId: "182993286746",
+      appId: "1:182993286746:web:481aa971d71a25c26f0a63",
+      measurementId: "G-7B9W9HW30Q"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+  </script>
+
+  <!-- 👤 Per-user FXBlue widget logic -->
+  <script>
+    (function() {
+      const currentUser = localStorage.getItem('currentUser');
+      if (!currentUser) {
+        // Not logged in – same behaviour as index
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const iframe = document.getElementById('statsIframe');
+      const placeholder = document.getElementById('statsPlaceholder');
+      const widgetInput = document.getElementById('widgetUrlInput');
+      const saveBtn = document.getElementById('saveWidgetBtn');
+      const statusEl = document.getElementById('widgetSaveStatus');
+
+      // Load existing config for this user in realtime
+      db.collection('users').doc(currentUser).onSnapshot((doc) => {
+        const data = doc.data() || {};
+        const statsConfig = data.statsConfig || {};
+        const widgetUrl = statsConfig.widgetUrl || '';
+
+        if (widgetUrl) {
+          iframe.src = widgetUrl;
+          iframe.style.display = 'block';
+          placeholder.style.display = 'none';
+          widgetInput.value = widgetUrl;
+        } else {
+          iframe.style.display = 'none';
+          placeholder.style.display = 'block';
+        }
+      });
+
+      // Save button handler
+      if (saveBtn) {
+        saveBtn.addEventListener('click', async () => {
+          const url = widgetInput.value.trim();
+          if (!url) {
+            statusEl.textContent = "Please paste a widget URL from FXBlue.";
+            return;
+          }
+
+          try {
+            await db.collection('users').doc(currentUser).set({
+              statsConfig: {
+                provider: 'fxblue',
+                widgetUrl: url
+              }
+            }, { merge: true });
+
+            statusEl.textContent = "Saved ✔ Your stats should appear in a moment.";
+            setTimeout(() => statusEl.textContent = "", 2500);
+          } catch (err) {
+            console.error(err);
+            statusEl.textContent = "Error saving link. Try again.";
+          }
+        });
+      }
+    })();
+  </script>
+
+  <!-- 🧠 Local note storage logic -->
   <script>
     (function () {
       const STORAGE_KEY_PREFIX = 'trading_note_';
