@@ -58,6 +58,34 @@
       color: var(--text-soft);
     }
 
+    /* 🔙 HOME BUTTON */
+    .home-btn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      transition: background 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .home-btn:hover {
+      background: rgba(0, 0, 0, 0.75);
+      border-color: var(--accent-soft);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.7);
+    }
+
     /* TOP 2/3 – NOTES GRID */
     .notes-section {
       flex: 0 0 66vh; /* roughly top two thirds of the page */
@@ -330,10 +358,21 @@
       body {
         padding: 10px;
       }
+
+      .home-btn {
+        top: 8px;
+        left: 8px;
+        padding: 6px 10px;
+        font-size: 0.7rem;
+      }
     }
   </style>
 </head>
 <body>
+
+  <!-- 🔙 HOME BUTTON -->
+  <a href="index.html" class="home-btn">⬅ Home</a>
+
   <main class="trading-page">
     <!-- TOP: TITLE -->
     <header class="trading-header">
@@ -627,3 +666,4 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
   </script>
 </body>
 </html>
+                                                            
