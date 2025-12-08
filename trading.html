@@ -481,6 +481,38 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
     </section>
   </main>
 
+<section class="bottom-section">
+  <div>
+    <h3>Live Account Stats</h3>
+    <p id="statsPlaceholder">
+      Connect your FXBlue widget link to see your funded account stats here.
+    </p>
+    <iframe
+      id="statsIframe"
+      src=""
+      width="100%"
+      height="260"
+      style="border:none; border-radius: 12px; overflow:hidden; display:none;">
+    </iframe>
+  </div>
+
+  <div>
+    <p style="margin-bottom:6px;">Connect Trading Stats (FXBlue)</p>
+    <input
+      type="text"
+      id="widgetUrlInput"
+      placeholder="Paste your FXBlue widget URL"
+      style="width:100%; max-width:260px; padding:6px 8px; border-radius:8px; border:1px solid rgba(255,255,255,0.25); background:rgba(0,0,0,0.4); color:#fff; font-size:0.75rem;">
+    <button
+      id="saveWidgetBtn"
+      style="margin-top:6px; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.25); background:rgba(0,0,0,0.6); color:#fff; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; cursor:pointer;">
+      Save Link
+    </button>
+    <div id="widgetSaveStatus" style="margin-top:4px; font-size:0.7rem; opacity:0.8;"></div>
+  </div>
+</section>
+
+
   <!-- EXPANDED NOTE OVERLAY -->
   <div class="note-overlay" id="noteOverlay">
     <div class="note-expanded">
@@ -666,4 +698,3 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
   </script>
 </body>
 </html>
-                                                            
