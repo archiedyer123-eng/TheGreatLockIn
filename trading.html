@@ -1,882 +1,629 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TRADING</title>
-<link href="https://fonts.googleapis.com/css2?family=Aptos+Mono&display=swap" rel="stylesheet">
-<style>
+  <meta charset="UTF-8">
+  <title>Trading Notebook</title>
+  <link href="https://fonts.googleapis.com/css2?family=Aptos+Mono&display=swap" rel="stylesheet">
+  <style>
     :root {
-        --primary: #00796b;
-        --secondary: #333;
-        --background: rgba(255, 255, 255, 0.9);
-        --text: #333;
-        --accent: #ff5722;
-        --success: #4caf50;
-        --warning: #ff9800;
-        --profit: #2e7d32;
-        --loss: #d32f2f;
+      --bg-dark: #060712;
+      --bg-card: rgba(15, 18, 40, 0.9);
+      --accent: #00e09d;
+      --accent-soft: rgba(0, 224, 157, 0.25);
+      --text-main: #f5f5f5;
+      --text-soft: #a0a3b1;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --danger: #ff4d4d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-        font-family: 'Aptos Mono', monospace;
-        background: url('https://i.imgur.com/dhCwS1U.jpeg') no-repeat center center fixed;
-        background-size: cover;
-        padding: 0;
-        margin: 0;
-        color: var(--text);
-        transition: background-image 0.5s ease;
+      font-family: 'Aptos Mono', monospace;
+      background: radial-gradient(circle at top, #141834 0, #050611 55%, #000 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
     }
 
-    .main-content {
-        padding: 20px;
-        margin-top: 20px;
-        max-width: 900px;
-        margin-left: auto;
-        margin-right: auto;
+    .trading-page {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    h1 {
-        text-align: center;
-        color: var(--primary);
-        font-size: 1.8em;
-        margin-bottom: 20px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    .trading-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 8px 4px 0;
     }
 
-    .back-btn {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        background: rgba(80, 80, 80, 0.5);
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: white;
-        padding: 7px 11px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-family: 'Aptos Mono', monospace;
-        font-size: 12px;
-        font-weight: bold;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        z-index: 1002;
+    .trading-title {
+      font-size: 1.4rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
-    .back-btn:hover {
-        background: rgba(100, 100, 100, 0.7);
-        transform: scale(1.05);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    .trading-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-soft);
     }
 
-    .background-controls {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        z-index: 1000;
+    /* TOP 2/3 – NOTES GRID */
+    .notes-section {
+      flex: 0 0 66vh; /* roughly top two thirds of the page */
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .bg-button {
-        background: rgba(255, 255, 255, 0.8);
-        border: none;
-        border-radius: 15px;
-        padding: 8px 12px;
-        cursor: pointer;
-        font-size: 11px;
-        font-family: 'Aptos Mono', monospace;
-        transition: all 0.3s ease;
-        min-width: 60px;
+    .notes-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      padding: 0 4px;
     }
 
-    .bg-button:hover {
-        background: rgba(255, 255, 255, 0.9);
-        transform: scale(1.05);
+    .notes-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      align-content: start;
     }
 
-    .bg-button.active {
-        background: rgba(51, 51, 51, 0.8);
-        color: white;
+    .note-card {
+      position: relative;
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      padding: 10px 11px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
 
-    .daily-tracker {
-        background: var(--background);
-        border-radius: 10px;
-        padding: 20px;
-        margin: 20px 0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        backdrop-filter: blur(10px);
+    .note-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+      border-color: var(--accent-soft);
+      background: radial-gradient(circle at top left, rgba(0, 224, 157, 0.08), var(--bg-card));
     }
 
-    .day-navigation {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 20px;
-        gap: 10px;
+    .note-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      opacity: 0.85;
     }
 
-    .day-card {
-        background: rgba(255, 255, 255, 0.7);
-        border-radius: 8px;
-        padding: 10px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: 1px solid transparent;
-        min-width: 80px;
+    .note-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .day-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-        background: rgba(255, 255, 255, 0.9);
+    .note-preview {
+      margin-top: 4px;
+      font-size: 0.8rem;
+      line-height: 1.25;
+      color: var(--text-soft);
+      max-height: 4.6em;
+      overflow: hidden;
     }
 
-    .day-card.current {
-        background: var(--primary);
-        color: white;
-        transform: scale(1.15);
-        border: 1px solid var(--primary);
-        min-width: 110px;
-        padding: 12px;
+    .note-meta {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      color: var(--text-soft);
+      opacity: 0.75;
     }
 
-    .day-card.side {
-        opacity: 0.8;
-        transform: scale(0.9);
+    .note-meta-pill {
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
     }
 
-    .day-card.future {
-        opacity: 0.4;
-        background: rgba(200, 200, 200, 0.3);
-        cursor: not-allowed;
-        filter: grayscale(50%);
+    /* EXPANDED NOTE OVERLAY */
+    .note-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 3, 10, 0.88);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
     }
 
-    .day-card.future:hover {
-        transform: none;
-        box-shadow: none;
-        background: rgba(200, 200, 200, 0.3);
+    .note-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
     }
 
-    .day-card.has-data {
-        position: relative;
+    .note-expanded {
+      width: 80vw;
+      max-width: 950px;
+      height: 80vh; /* 4/5 of page-ish */
+      background: radial-gradient(circle at top left, rgba(0, 224, 157, 0.08), #050716);
+      border-radius: 18px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
+      padding: 14px 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
     }
 
-    .day-card.has-data::after {
-        content: '●';
-        position: absolute;
-        top: 5px;
-        right: 8px;
-        color: var(--success);
-        font-size: 16px;
-        font-weight: bold;
+    .note-expanded-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .day-name {
-        font-weight: bold;
-        font-size: 0.9em;
-        margin-bottom: 3px;
+    .note-expanded-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent);
     }
 
-    .day-date {
-        font-size: 0.75em;
-        opacity: 0.8;
+    .note-expanded-title {
+      flex: 1;
+      font-size: 0.95rem;
+      padding: 6px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--text-main);
+      outline: none;
     }
 
-    .day-card.current .day-date {
-        opacity: 1;
+    .note-close-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-soft);
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 999px;
+      transition: background 0.15s ease, color 0.15s ease;
     }
 
-    .nav-arrow {
-        background: rgba(255, 255, 255, 0.8);
-        border: none;
-        border-radius: 50%;
-        width: 35px;
-        height: 35px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-size: 1.1em;
-        color: var(--primary);
-        transition: all 0.3s ease;
+    .note-close-btn:hover {
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--danger);
     }
 
-    .nav-arrow:hover {
-        background: var(--primary);
-        color: white;
-        transform: scale(1.1);
+    .note-expanded-body {
+      flex: 1;
+      margin-top: 6px;
+      padding: 10px 11px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(4, 6, 20, 0.85);
+      font-size: 0.85rem;
+      line-height: 1.4;
+      color: var(--text-main);
+      outline: none;
+      overflow-y: auto;
+      white-space: pre-wrap;
     }
 
-    .current-date-info {
-        text-align: center;
-        margin-bottom: 15px;
+    .note-expanded-body:empty::before {
+      content: "Write your full breakdown here: entry, exit, risk, psychology, mistakes, improvements…";
+      color: var(--text-soft);
+      opacity: 0.7;
     }
 
-    .current-date-display {
-        font-size: 1.3em;
-        font-weight: bold;
-        color: var(--primary);
-        margin-bottom: 3px;
+    .note-expanded-footer {
+      margin-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-soft);
     }
 
-    .current-weekday {
-        font-size: 1em;
-        color: var(--text);
-        opacity: 0.7;
+    .save-status {
+      min-height: 1em;
     }
 
-    .trading-sections {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        margin-top: 20px;
+    .note-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
     }
 
-    .section {
-        background: var(--background);
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        backdrop-filter: blur(10px);
+    .note-btn {
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-main);
+      font-size: 0.75rem;
+      padding: 6px 11px;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: background 0.16s ease, border-color 0.16s ease, transform 0.12s ease;
     }
 
-    .section-title {
-        font-size: 1.1em;
-        font-weight: bold;
-        color: var(--primary);
-        margin-bottom: 15px;
-        text-align: center;
+    .note-btn-primary {
+      border-color: var(--accent-soft);
+      background: linear-gradient(120deg, rgba(0, 224, 157, 0.28), rgba(0, 224, 157, 0.05));
     }
 
-    .notes-textarea {
-        width: 100%;
-        min-height: 200px;
-        padding: 12px;
-        border: 1px solid rgba(0, 121, 107, 0.3);
-        border-radius: 8px;
-        font-family: 'Aptos Mono', monospace;
-        font-size: 14px;
-        background: rgba(255, 255, 255, 0.9);
-        color: var(--text);
-        resize: vertical;
-        transition: all 0.3s ease;
-        box-sizing: border-box;
+    .note-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateY(-1px);
     }
 
-    .notes-textarea:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 15px rgba(0, 121, 107, 0.2);
-        background: rgba(255, 255, 255, 1);
+    .note-btn-primary:hover {
+      background: linear-gradient(120deg, rgba(0, 224, 157, 0.45), rgba(0, 224, 157, 0.1));
     }
 
-    .save-indicator {
-        text-align: center;
-        margin-top: 10px;
-        font-size: 0.9em;
-        opacity: 0;
-        transition: opacity 0.3s ease;
+    .note-danger {
+      color: var(--danger);
+      border-color: rgba(255, 77, 77, 0.4);
     }
 
-    .save-indicator.show {
-        opacity: 1;
+    /* LOWER 1/3 – RESERVED FOR LATER STUFF */
+    .bottom-section {
+      flex: 1;
+      border-radius: 14px;
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      background: radial-gradient(circle at bottom right, rgba(0, 224, 157, 0.05), rgba(0, 0, 0, 0.6));
+      padding: 10px 12px;
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
     }
 
-    .save-indicator.saving {
-        color: var(--warning);
-    }
-
-    .save-indicator.saved {
-        color: var(--success);
-    }
-
-    .quick-actions {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin: 15px 0;
-        flex-wrap: wrap;
-    }
-
-    .quick-btn {
-        padding: 6px 12px;
-        background: var(--primary);
-        color: white;
-        border: none;
-        border-radius: 15px;
-        cursor: pointer;
-        font-family: 'Aptos Mono', monospace;
-        font-size: 12px;
-        transition: all 0.3s ease;
-    }
-
-    .quick-btn:hover {
-        background: #005751;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    .quick-btn.profit {
-        background: var(--profit);
-    }
-
-    .quick-btn.profit:hover {
-        background: #1b5e20;
-    }
-
-    .quick-btn.loss {
-        background: var(--loss);
-    }
-
-    .quick-btn.loss:hover {
-        background: #c62828;
-    }
-
-    .trade-form {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 15px;
-    }
-
-    .trade-input {
-        padding: 8px 12px;
-        border: 1px solid rgba(0, 121, 107, 0.3);
-        border-radius: 6px;
-        font-family: 'Aptos Mono', monospace;
-        font-size: 14px;
-        background: rgba(255, 255, 255, 0.9);
-        color: var(--text);
-        transition: all 0.3s ease;
-    }
-
-    .trade-input:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 10px rgba(0, 121, 107, 0.2);
-        background: rgba(255, 255, 255, 1);
-    }
-
-    .trade-input.full-width {
-        grid-column: 1 / -1;
-    }
-
-    .add-trade-btn {
-        grid-column: 1 / -1;
-        padding: 10px;
-        background: var(--primary);
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-family: 'Aptos Mono', monospace;
-        font-size: 14px;
-        font-weight: bold;
-        transition: all 0.3s ease;
-    }
-
-    .add-trade-btn:hover {
-        background: #005751;
-        transform: translateY(-1px);
-        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-    }
-
-    .monthly-stats {
-        background: var(--background);
-        border-radius: 10px;
-        padding: 15px;
-        margin: 20px 0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        backdrop-filter: blur(10px);
-        text-align: center;
-        grid-column: 1 / -1;
-    }
-
-    .monthly-stats h3 {
-        color: var(--primary);
-        margin-bottom: 15px;
-        font-size: 1.1em;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 15px;
-        margin-top: 10px;
-    }
-
-    .stat-item {
-        background: rgba(255, 255, 255, 0.7);
-        border-radius: 8px;
-        padding: 10px;
-        border: 1px solid rgba(0, 121, 107, 0.2);
-    }
-
-    .stat-number {
-        font-size: 1.4em;
-        font-weight: bold;
-        color: var(--primary);
-        display: block;
-    }
-
-    .stat-number.profit {
-        color: var(--profit);
-    }
-
-    .stat-number.loss {
-        color: var(--loss);
-    }
-
-    .stat-label {
-        font-size: 0.8em;
-        color: var(--text);
-        opacity: 0.8;
+    .bottom-section h3 {
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
     }
 
     @media (max-width: 768px) {
-        .trading-sections {
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-        
-        .day-navigation {
-            gap: 10px;
-        }
-        
-        .day-card {
-            min-width: 80px;
-            padding: 10px;
-        }
-        
-        .day-card.current {
-            min-width: 120px;
-            padding: 15px;
-        }
-        
-        .nav-arrow {
-            width: 40px;
-            height: 40px;
-            font-size: 1.2em;
-        }
-        
-        .notes-textarea {
-            min-height: 150px;
-            padding: 15px;
-            font-size: 14px;
-        }
-
-        .trade-form {
-            grid-template-columns: 1fr;
-        }
+      .note-expanded {
+        width: 94vw;
+        height: 86vh;
+        padding: 12px;
+      }
+      .notes-section {
+        flex: 0 0 auto;
+        min-height: 340px;
+      }
+      body {
+        padding: 10px;
+      }
     }
-
-    @media (max-width: 480px) {
-        .day-navigation {
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .day-cards-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 10px 0;
-        }
-        
-        .quick-actions {
-            flex-direction: column;
-            align-items: center;
-        }
-    }
-</style>
+  </style>
 </head>
 <body>
-<a href="index.html" class="back-btn">← Return to Home</a>
+  <main class="trading-page">
+    <!-- TOP: TITLE -->
+    <header class="trading-header">
+      <div>
+        <div class="trading-title">TRADING PLAYBOOK</div>
+        <div class="trading-subtitle">Strategies · Setups · Psychology · Risk</div>
+      </div>
+      <div class="trading-subtitle">
+        Click a box to open&nbsp;·&nbsp;Edit&nbsp;·&nbsp;Hit Save when you're happy
+      </div>
+    </header>
 
-<div class="main-content">
-    <h1>TRADING</h1>
-    
-    <div class="daily-tracker">
-        <div class="day-navigation">
-            <button class="nav-arrow" onclick="changeDay(-1)">◀</button>
-            
-            <div class="day-card side" id="dayMinus1" onclick="setCurrentDay(-1)">
-                <div class="day-name" id="dayNameMinus1"></div>
-                <div class="day-date" id="dayDateMinus1"></div>
-            </div>
-            
-            <div class="day-card current" id="dayCurrent" onclick="setCurrentDay(0)">
-                <div class="day-name" id="dayNameCurrent"></div>
-                <div class="day-date" id="dayDateCurrent"></div>
-            </div>
-            
-            <div class="day-card side" id="dayPlus1" onclick="setCurrentDay(1)">
-                <div class="day-name" id="dayNamePlus1"></div>
-                <div class="day-date" id="dayDatePlus1"></div>
-            </div>
-            
-            <button class="nav-arrow" onclick="changeDay(1)">▶</button>
+    <!-- TOP 2/3: NOTES GRID -->
+    <section class="notes-section">
+      <div class="notes-header-row">
+        <span>Strategy & knowledge blocks (editable)</span>
+        <span>Local save · No backend needed</span>
+      </div>
+
+      <div class="notes-grid">
+        <!-- CARD 1 -->
+        <article class="note-card" data-note-id="note-1" data-default-title="London Session Breakout" data-default-body="Bias: Trade only in direction of HTF trend. 
+Filter: Avoid entries within 5 mins of high impact news.
+Execution: Wait for clean break + retest of Asian range.">
+          <div class="note-label">Strategy</div>
+          <div class="note-title">London Session Breakout</div>
+          <div class="note-preview">
+            Bias: Trade only in direction of HTF trend. Filter: Avoid entries within 5 mins of high impact news…
+          </div>
+          <div class="note-meta">
+            <span class="note-meta-pill">FX · Session</span>
+            <span>Last edited: —</span>
+          </div>
+        </article>
+
+        <!-- CARD 2 -->
+        <article class="note-card" data-note-id="note-2" data-default-title="Risk Management Rules" data-default-body="Max risk per trade: 1R
+Max daily drawdown: 3R then stop.
+Max weekly drawdown: 6R then reduce size by 50% and review.">
+          <div class="note-label">Risk</div>
+          <div class="note-title">Risk Management Rules</div>
+          <div class="note-preview">
+            Max risk per trade: 1R, max daily drawdown, weekly cap and when to stop trading…
+          </div>
+          <div class="note-meta">
+            <span class="note-meta-pill">Account</span>
+            <span>Last edited: —</span>
+          </div>
+        </article>
+
+        <!-- CARD 3 -->
+        <article class="note-card" data-note-id="note-3" data-default-title="Trading Psychology" data-default-body="Non-negotiables:
+• No revenge trading after a loss.
+• Only trade when well-rested.
+• If emotions > 6/10, step away for 30 minutes.">
+          <div class="note-label">Mindset</div>
+          <div class="note-title">Trading Psychology</div>
+          <div class="note-preview">
+            Non-negotiables: no revenge trading, only trade when rested, rules for emotional tilt…
+          </div>
+          <div class="note-meta">
+            <span class="note-meta-pill">Psych</span>
+            <span>Last edited: —</span>
+          </div>
+        </article>
+
+        <!-- CARD 4 -->
+        <article class="note-card" data-note-id="note-4" data-default-title="Journal Template" data-default-body="Template:
+• Pair / Instrument:
+• Session:
+• Setup name:
+• Entry / SL / TP:
+• Screenshots:
+• What I did well:
+• What I'll improve next time:">
+          <div class="note-label">Journal</div>
+          <div class="note-title">Journal Template</div>
+          <div class="note-preview">
+            Ready-made template for writing up trades, including ‘what I did well’ and ‘improvements’…
+          </div>
+          <div class="note-meta">
+            <span class="note-meta-pill">Process</span>
+            <span>Last edited: —</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- BOTTOM 1/3: RESERVED AREA -->
+    <section class="bottom-section">
+      <div>
+        <h3>Next: Stats & Watchlist</h3>
+        <p>
+          We can use this area later for equity curve, win rate, R-multiple distribution, live watchlist, or a
+          “today’s plan” box. For now it’s just a placeholder.
+        </p>
+      </div>
+      <div>
+        <p>Ideas for later:</p>
+        <ul style="list-style: none; font-size: 0.75rem; margin-top: 3px;">
+          <li>• Weekly P/L bar chart</li>
+          <li>• Open risk + exposure</li>
+          <li>• Screenshot links / trade IDs</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- EXPANDED NOTE OVERLAY -->
+  <div class="note-overlay" id="noteOverlay">
+    <div class="note-expanded">
+      <div class="note-expanded-header">
+        <span class="note-expanded-label">Playbook Block</span>
+        <input type="text" id="expandedTitle" class="note-expanded-title" />
+        <button class="note-close-btn" id="closeNoteBtn" title="Close">&times;</button>
+      </div>
+
+      <div id="expandedBody" class="note-expanded-body" contenteditable="true"></div>
+
+      <div class="note-expanded-footer">
+        <div class="save-status" id="saveStatus"></div>
+        <div class="note-actions">
+          <button class="note-btn note-danger" id="clearNoteBtn">Clear</button>
+          <button class="note-btn note-btn-primary" id="saveNoteBtn">Save</button>
         </div>
-
-        <div class="current-date-info">
-            <div class="current-date-display" id="currentDateDisplay"></div>
-            <div class="current-weekday" id="currentWeekday"></div>
-        </div>
-
-        <div class="trading-sections">
-            <div class="section">
-                <div class="section-title" id="learningTitle">Learning Notes</div>
-                
-                <div class="quick-actions">
-                    <button class="quick-btn" onclick="addLearningNote('Chart patterns: ')">Patterns</button>
-                    <button class="quick-btn" onclick="addLearningNote('Support/Resistance: ')">S/R</button>
-                    <button class="quick-btn" onclick="addLearningNote('Risk management: ')">Risk Mgmt</button>
-                    <button class="quick-btn" onclick="addLearningNote('Psychology: ')">Psychology</button>
-                </div>
-                
-                <textarea 
-                    class="notes-textarea" 
-                    id="learningNotes" 
-                    placeholder="Today's learning notes, strategies, market observations..."
-                    oninput="saveLearningNotes()"
-                ></textarea>
-                <div class="save-indicator" id="learningIndicator">Auto-saving...</div>
-            </div>
-
-            <div class="section">
-                <div class="section-title" id="tradesTitle">Trade Analysis</div>
-                
-                <div class="trade-form">
-                    <input type="text" class="trade-input" id="symbolInput" placeholder="Symbol (e.g., AAPL)">
-                    <input type="number" class="trade-input" id="priceInput" placeholder="Entry Price" step="0.01">
-                    <input type="number" class="trade-input" id="exitInput" placeholder="Exit Price" step="0.01">
-                    <input type="number" class="trade-input" id="quantityInput" placeholder="Quantity">
-                    <input type="text" class="trade-input full-width" id="reasonInput" placeholder="Reason for trade / What happened">
-                    <button class="add-trade-btn" onclick="addTrade()">Add Trade</button>
-                </div>
-
-                <div class="quick-actions">
-                    <button class="quick-btn profit" onclick="addTradeNote('PROFIT: ')">Profit</button>
-                    <button class="quick-btn loss" onclick="addTradeNote('LOSS: ')">Loss</button>
-                    <button class="quick-btn" onclick="addTradeNote('BREAKEVEN: ')">Breakeven</button>
-                    <button class="quick-btn" onclick="addTradeNote('PAPER: ')">Paper Trade</button>
-                </div>
-                
-                <textarea 
-                    class="notes-textarea" 
-                    id="tradeNotes" 
-                    placeholder="Trade details, what went right/wrong, lessons learned..."
-                    oninput="saveTradeNotes()"
-                ></textarea>
-                <div class="save-indicator" id="tradeIndicator">Auto-saving...</div>
-            </div>
-        </div>
-
-        <div class="monthly-stats">
-            <h3>This Month's Trading Progress</h3>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-number" id="totalTrades">0</span>
-                    <span class="stat-label">Total Trades</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number profit" id="profitTrades">0</span>
-                    <span class="stat-label">Profitable</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number loss" id="lossTrades">0</span>
-                    <span class="stat-label">Losses</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="breakevenTrades">0</span>
-                    <span class="stat-label">Breakeven</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="paperTrades">0</span>
-                    <span class="stat-label">Paper Trades</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="winRate">0%</span>
-                    <span class="stat-label">Win Rate</span>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<div class="background-controls">
-    <button class="bg-button active" onclick="changeBackground(0)">Standard</button>
-    <button class="bg-button" onclick="changeBackground(1)">Summer</button>
-    <button class="bg-button" onclick="changeBackground(2)">Winter</button>
-</div>
+  <script>
+    (function () {
+      const STORAGE_KEY_PREFIX = 'trading_note_';
+      const overlay = document.getElementById('noteOverlay');
+      const titleInput = document.getElementById('expandedTitle');
+      const bodyEl = document.getElementById('expandedBody');
+      const saveBtn = document.getElementById('saveNoteBtn');
+      const clearBtn = document.getElementById('clearNoteBtn');
+      const closeBtn = document.getElementById('closeNoteBtn');
+      const saveStatus = document.getElementById('saveStatus');
+      const cards = document.querySelectorAll('.note-card');
 
-<script>
-// Check if user is logged in
-const currentUser = localStorage.getItem('currentUser');
-if (!currentUser) {
-    window.location.href = 'login.html';
-}
+      let currentNoteId = null;
+      let currentCard = null;
 
-// Background system
-const backgrounds = [
-    'https://i.imgur.com/dhCwS1U.jpeg',
-    'https://i.pinimg.com/736x/62/d7/34/62d7347f6d5c8274eb5c04f494c63579.jpg',
-    'https://i.pinimg.com/736x/6b/79/1f/6b791f706bfc6010b1f285ffe7867a50.jpg'
-];
+      function storageKey(id) {
+        return STORAGE_KEY_PREFIX + id;
+      }
 
-let currentBgIndex = parseInt(localStorage.getItem('globalBackgroundIndex')) || 0;
+      function loadNote(id, card) {
+        const raw = localStorage.getItem(storageKey(id));
+        if (!raw) {
+          // use defaults from data attributes
+          const defaultTitle = card.getAttribute('data-default-title') || 'Untitled note';
+          const defaultBody = card.getAttribute('data-default-body') || '';
+          return {
+            title: defaultTitle,
+            body: defaultBody,
+            updated: null
+          };
+        }
+        try {
+          return JSON.parse(raw);
+        } catch (e) {
+          return {
+            title: 'Corrupted note (fix me)',
+            body: raw,
+            updated: null
+          };
+        }
+      }
 
-function changeBackground(index) {
-    currentBgIndex = index;
-    document.body.style.backgroundImage = `url('${backgrounds[index]}')`;
-    localStorage.setItem('globalBackgroundIndex', index);
-    
-    document.querySelectorAll('.bg-button').forEach((btn, i) => {
-        btn.classList.toggle('active', i === index);
-    });
-}
+      function saveNote() {
+        if (!currentNoteId || !currentCard) return;
 
-function initializeBackground() {
-    changeBackground(currentBgIndex);
-}
+        const note = {
+          title: titleInput.value.trim() || 'Untitled note',
+          body: bodyEl.innerText.trim(),
+          updated: new Date().toISOString()
+        };
 
-// Date management
-let currentDateOffset = 0;
+        localStorage.setItem(storageKey(currentNoteId), JSON.stringify(note));
+        updateCardPreview(currentCard, note);
+        showStatus('Saved ✔');
+      }
 
-function getDateWithOffset(offset) {
-    const date = new Date();
-    date.setDate(date.getDate() + offset);
-    return date;
-}
+      function clearNote() {
+        if (!currentNoteId || !currentCard) return;
+        bodyEl.innerText = '';
+        titleInput.value = '';
+        showStatus('Cleared (don’t forget to Save)!');
+      }
 
-function formatDate(date) {
-    const options = { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-    };
-    return date.toLocaleDateString('en-US', options);
-}
-
-function formatShortDate(date) {
-    const options = { 
-        month: 'short', 
-        day: 'numeric' 
-    };
-    return date.toLocaleDateString('en-US', options);
-}
-
-function getDayName(date) {
-    const options = { weekday: 'long' };
-    return date.toLocaleDateString('en-US', options);
-}
-
-function getDateKey(date) {
-    return date.toISOString().split('T')[0];
-}
-
-function updateDayDisplay() {
-    const dayMinus1 = getDateWithOffset(currentDateOffset - 1);
-    const dayCurrent = getDateWithOffset(currentDateOffset);
-    const dayPlus1 = getDateWithOffset(currentDateOffset + 1);
-    const today = new Date();
-
-    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-    updateDayCard('dayMinus1', dayMinus1, 'dayNameMinus1', 'dayDateMinus1', todayOnly);
-    updateDayCard('dayCurrent', dayCurrent, 'dayNameCurrent', 'dayDateCurrent', todayOnly);
-    updateDayCard('dayPlus1', dayPlus1, 'dayNamePlus1', 'dayDatePlus1', todayOnly);
-
-    document.getElementById('currentDateDisplay').textContent = formatDate(dayCurrent);
-    document.getElementById('currentWeekday').textContent = getDayName(dayCurrent);
-    
-    const isToday = getDateKey(dayCurrent) === getDateKey(today);
-    document.getElementById('learningTitle').textContent = 
-        isToday ? "Today's Learning Notes" : `Learning Notes - ${formatShortDate(dayCurrent)}`;
-    document.getElementById('tradesTitle').textContent = 
-        isToday ? "Today's Trades" : `Trades - ${formatShortDate(dayCurrent)}`;
-
-    loadNotes();
-    updateMonthlyStats();
-}
-
-function updateDayCard(cardId, date, nameId, dateId, todayOnly) {
-    const card = document.getElementById(cardId);
-    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    
-    document.getElementById(nameId).textContent = getDayName(date);
-    document.getElementById(dateId).textContent = formatShortDate(date);
-    
-    card.classList.remove('future', 'has-data');
-    
-    if (dateOnly > todayOnly) {
-        card.classList.add('future');
-    }
-    
-    const dateKey = getDateKey(date);
-    const learningNotes = localStorage.getItem(currentUser + '_tradingLearning_' + dateKey) || '';
-    const tradeNotes = localStorage.getItem(currentUser + '_tradingTrades_' + dateKey) || '';
-    
-    if (learningNotes.trim().length > 0 || tradeNotes.trim().length > 0) {
-        card.classList.add('has-data');
-    }
-}
-
-function changeDay(direction) {
-    currentDateOffset += direction;
-    updateDayDisplay();
-}
-
-function setCurrentDay(relativeOffset) {
-    currentDateOffset += relativeOffset;
-    updateDayDisplay();
-}
-
-// Notes management
-let learningTimeout = null;
-let tradeTimeout = null;
-
-function saveLearningNotes() {
-    const currentDate = getDateWithOffset(currentDateOffset);
-    const today = new Date();
-    
-    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    
-    if (currentDateOnly > todayOnly) {
-        const indicator = document.getElementById('learningIndicator');
-        indicator.className = 'save-indicator show';
-        indicator.textContent = '⚠️ Cannot save future entries';
-        indicator.style.color = '#ff9800';
-        
+      function showStatus(msg) {
+        saveStatus.textContent = msg;
         setTimeout(() => {
-            indicator.className = 'save-indicator';
-        }, 3000);
-        return;
-    }
-    
-    const notes = document.getElementById('learningNotes').value;
-    const dateKey = getDateKey(currentDate);
-    
-    const indicator = document.getElementById('learningIndicator');
-    indicator.className = 'save-indicator show saving';
-    indicator.textContent = 'Saving...';
-    
-    if (learningTimeout) {
-        clearTimeout(learningTimeout);
-    }
-    
-    learningTimeout = setTimeout(() => {
-        localStorage.setItem(currentUser + '_tradingLearning_' + dateKey, notes);
-        
-        indicator.className = 'save-indicator show saved';
-        indicator.textContent = '✅ Saved';
-        
-        updateDayDisplay();
-        
-        setTimeout(() => {
-            indicator.className = 'save-indicator';
-        }, 2000);
-    }, 1000);
-}
+          if (saveStatus.textContent === msg) {
+            saveStatus.textContent = '';
+          }
+        }, 2500);
+      }
 
-function saveTradeNotes() {
-    const currentDate = getDateWithOffset(currentDateOffset);
-    const today = new Date();
-    
-    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    
-    if (currentDateOnly > todayOnly) {
-        const indicator = document.getElementById('tradeIndicator');
-        indicator.className = 'save-indicator show';
-        indicator.textContent = '⚠️ Cannot save future entries';
-        indicator.style.color = '#ff9800';
-        
-        setTimeout(() => {
-            indicator.className = 'save-indicator';
-        }, 3000);
-        return;
-    }
-    
-    const notes = document.getElementById('tradeNotes').value;
-    const dateKey = getDateKey(currentDate);
-    
-    const indicator = document.getElementById('tradeIndicator');
-    indicator.className = 'save-indicator show saving';
-    indicator.textContent = 'Saving...';
-    
-    if (tradeTimeout) {
-        clearTimeout(tradeTimeout);
-    }
-    
-    tradeTimeout = setTimeout(() => {
-        localStorage.setItem(currentUser + '_tradingTrades_' + dateKey, notes);
-        
-        indicator.className = 'save-indicator show saved';
-        indicator.textContent = '✅ Saved';
-        
-        updateDayDisplay();
-        updateMonthlyStats();
-        
-        setTimeout(() => {
-            indicator.className = 'save-indicator';
-        }, 2000);
-    }, 1000);
-}
+      function formatDate(iso) {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        if (Number.isNaN(d.getTime())) return '—';
+        return d.toLocaleString(undefined, {
+          day: '2-digit',
+          month: 'short',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
 
-function loadNotes() {
-    const currentDate = getDateWithOffset(currentDateOffset);
-    const dateKey = getDateKey(currentDate);
-    
-    const learningNotes = localStorage.getItem(currentUser + '_tradingLearning_' + dateKey) || '';
-    const tradeNotes = localStorage.getItem(currentUser + '_tradingTrades_' + dateKey) || '';
-    
-    document.getElementById('learningNotes').value = learningNotes;
-    document.getElementById('tradeNotes').value = tradeNotes;
-}
+      function updateCardPreview(card, note) {
+        const titleEl = card.querySelector('.note-title');
+        const previewEl = card.querySelector('.note-preview');
+        const metaTime = card.querySelector('.note-meta span:last-child');
 
-function addLearningNote(text) {
-    const currentDate = getDateWithOffset(currentDateOffset);
-    const today = new Date();
-    
-    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    
-    if (currentDateOnly > todayOnly) {
-        alert("You cannot add notes for future dates until that day arrives!");
-        return;
-    }
-    
-    const textarea = document.getElementById('learningNotes');
-    const currentValue = textarea.value;
-    
-    const newNote = `${currentValue ? currentValue + '\n\n' : ''}${text}`;
-    textarea.value = newNote;
-    
-    textarea.focus();
-    textarea.setSelectionRange(newNote.length, newNote.length);
-    
-    saveLearningNotes();
-}
+        if (titleEl) titleEl.textContent = note.title || 'Untitled note';
+        if (previewEl) {
+          const text = (note.body || '').replace(/\s+/g, ' ').trim();
+          previewEl.textContent = text
+            ? (text.length > 120 ? text.slice(0, 120) + '…' : text)
+            : 'Click to add details to this block…';
+        }
+        if (metaTime) metaTime.textContent = 'Last edited: ' + formatDate(note.updated);
+      }
 
-function addTradeNote(text) {
-    const currentDate = getDateWithOffset(currentDateOffset);
-    const today = new Date();
-    
-    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    
-    if (currentDateOnly > todayOnly) {
-        alert("You cannot add notes for future dates until that day arrives!");
-        return;
-    }
-    
-    const textarea =
+      function openNote(card) {
+        const id = card.getAttribute('data-note-id');
+        currentNoteId = id;
+        currentCard = card;
+
+        const note = loadNote(id, card);
+        titleInput.value = note.title || '';
+        bodyEl.innerText = note.body || '';
+
+        overlay.classList.add('active');
+        saveStatus.textContent = '';
+        titleInput.focus();
+      }
+
+      function closeOverlay() {
+        overlay.classList.remove('active');
+        currentNoteId = null;
+        currentCard = null;
+      }
+
+      // INIT: load previews from storage / defaults
+      cards.forEach(card => {
+        const id = card.getAttribute('data-note-id');
+        const note = loadNote(id, card);
+        updateCardPreview(card, note);
+        card.addEventListener('click', () => openNote(card));
+      });
+
+      // BUTTON HOOKS
+      saveBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        saveNote();
+      });
+
+      clearBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clearNote();
+      });
+
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeOverlay();
+      });
+
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          closeOverlay();
+        }
+      });
+
+      // Optional: Ctrl+S to save when overlay is open
+      document.addEventListener('keydown', (e) => {
+        if (!overlay.classList.contains('active')) return;
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+          e.preventDefault();
+          saveNote();
+        }
+        if (e.key === 'Escape') {
+          closeOverlay();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
