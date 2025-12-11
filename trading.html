@@ -381,7 +381,7 @@
         <div class="trading-subtitle">Strategies · Setups · Psychology · Risk</div>
       </div>
       <div class="trading-subtitle">
-        Click a box to open&nbsp;·&nbsp;Edit&nbsp;·&nbsp;Hit Save when you're happy
+        Click a box to open&nbsp;·&nbsp;Autosaves&nbsp;·&nbsp;Synced to your account
       </div>
     </header>
 
@@ -389,7 +389,7 @@
     <section class="notes-section">
       <div class="notes-header-row">
         <span>Strategy & knowledge blocks (editable)</span>
-        <span>Local save · No backend needed</span>
+        <span>Autosaves · Firestore backend</span>
       </div>
 
       <div class="notes-grid">
@@ -481,43 +481,11 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
     </section>
   </main>
 
-  <!-- 🔢 LIVE STATS + WIDGET CONFIG (PER USER) -->
-  <section class="bottom-section">
-    <div>
-      <h3>Live Account Stats</h3>
-      <p id="statsPlaceholder">
-        Connect your FXBlue widget link to see your funded account stats here.
-      </p>
-      <iframe
-        id="statsIframe"
-        src=""
-        width="100%"
-        height="260"
-        style="border:none; border-radius: 12px; overflow:hidden; display:none;">
-      </iframe>
-    </div>
-
-    <div>
-      <p style="margin-bottom:6px;">Connect Trading Stats (FXBlue)</p>
-      <input
-        type="text"
-        id="widgetUrlInput"
-        placeholder="Paste your FXBlue widget URL"
-        style="width:100%; max-width:260px; padding:6px 8px; border-radius:8px; border:1px solid rgba(255,255,255,0.25); background:rgba(0,0,0,0.4); color:#fff; font-size:0.75rem;">
-      <button
-        id="saveWidgetBtn"
-        style="margin-top:6px; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.25); background:rgba(0,0,0,0.6); color:#fff; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; cursor:pointer;">
-        Save Link
-      </button>
-      <div id="widgetSaveStatus" style="margin-top:4px; font-size:0.7rem; opacity:0.8;"></div>
-    </div>
-  </section>
-
   <!-- EXPANDED NOTE OVERLAY -->
   <div class="note-overlay" id="noteOverlay">
     <div class="note-expanded">
       <div class="note-expanded-header">
-        <span class="note-expanded-label">Playbook Block</span>
+        <span class="note-expanded-label" id="noteBlockLabel">Playbook Block</span>
         <input type="text" id="expandedTitle" class="note-expanded-title" />
         <button class="note-close-btn" id="closeNoteBtn" title="Close">&times;</button>
       </div>
@@ -555,71 +523,9 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
     const db = firebase.firestore();
   </script>
 
-  <!-- 👤 Per-user FXBlue widget logic -->
-  <script>
-    (function() {
-      const currentUser = localStorage.getItem('currentUser');
-      if (!currentUser) {
-        // Not logged in – same behaviour as index
-        window.location.href = 'login.html';
-        return;
-      }
-
-      const iframe = document.getElementById('statsIframe');
-      const placeholder = document.getElementById('statsPlaceholder');
-      const widgetInput = document.getElementById('widgetUrlInput');
-      const saveBtn = document.getElementById('saveWidgetBtn');
-      const statusEl = document.getElementById('widgetSaveStatus');
-
-      // Load existing config for this user in realtime
-      db.collection('users').doc(currentUser).onSnapshot((doc) => {
-        const data = doc.data() || {};
-        const statsConfig = data.statsConfig || {};
-        const widgetUrl = statsConfig.widgetUrl || '';
-
-        if (widgetUrl) {
-          iframe.src = widgetUrl;
-          iframe.style.display = 'block';
-          placeholder.style.display = 'none';
-          widgetInput.value = widgetUrl;
-        } else {
-          iframe.style.display = 'none';
-          placeholder.style.display = 'block';
-        }
-      });
-
-      // Save button handler
-      if (saveBtn) {
-        saveBtn.addEventListener('click', async () => {
-          const url = widgetInput.value.trim();
-          if (!url) {
-            statusEl.textContent = "Please paste a widget URL from FXBlue.";
-            return;
-          }
-
-          try {
-            await db.collection('users').doc(currentUser).set({
-              statsConfig: {
-                provider: 'fxblue',
-                widgetUrl: url
-              }
-            }, { merge: true });
-
-            statusEl.textContent = "Saved ✔ Your stats should appear in a moment.";
-            setTimeout(() => statusEl.textContent = "", 2500);
-          } catch (err) {
-            console.error(err);
-            statusEl.textContent = "Error saving link. Try again.";
-          }
-        });
-      }
-    })();
-  </script>
-
-  <!-- 🧠 Local note storage logic -->
+  <!-- 🧠 Firestore-backed note storage logic + autosave -->
   <script>
     (function () {
-      const STORAGE_KEY_PREFIX = 'trading_note_';
       const overlay = document.getElementById('noteOverlay');
       const titleInput = document.getElementById('expandedTitle');
       const bodyEl = document.getElementById('expandedBody');
@@ -628,60 +534,27 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
       const closeBtn = document.getElementById('closeNoteBtn');
       const saveStatus = document.getElementById('saveStatus');
       const cards = document.querySelectorAll('.note-card');
+      const blockLabel = document.getElementById('noteBlockLabel');
+
+      const currentUser = localStorage.getItem('currentUser');
+      if (!currentUser) {
+        // If user not logged in, redirect to login (same behaviour as index)
+        window.location.href = 'login.html';
+        return;
+      }
 
       let currentNoteId = null;
       let currentCard = null;
+      let autosaveTimeout = null;
+      let isSaving = false;
 
-      function storageKey(id) {
-        return STORAGE_KEY_PREFIX + id;
-      }
-
-      function loadNote(id, card) {
-        const raw = localStorage.getItem(storageKey(id));
-        if (!raw) {
-          // use defaults from data attributes
-          const defaultTitle = card.getAttribute('data-default-title') || 'Untitled note';
-          const defaultBody = card.getAttribute('data-default-body') || '';
-          return {
-            title: defaultTitle,
-            body: defaultBody,
-            updated: null
-          };
-        }
-        try {
-          return JSON.parse(raw);
-        } catch (e) {
-          return {
-            title: 'Corrupted note (fix me)',
-            body: raw,
-            updated: null
-          };
-        }
-      }
-
-      function saveNote() {
-        if (!currentNoteId || !currentCard) return;
-
-        const note = {
-          title: titleInput.value.trim() || 'Untitled note',
-          body: bodyEl.innerText.trim(),
-          updated: new Date().toISOString()
-        };
-
-        localStorage.setItem(storageKey(currentNoteId), JSON.stringify(note));
-        updateCardPreview(currentCard, note);
-        showStatus('Saved ✔');
-      }
-
-      function clearNote() {
-        if (!currentNoteId || !currentCard) return;
-        bodyEl.innerText = '';
-        titleInput.value = '';
-        showStatus('Cleared (don’t forget to Save)!');
+      function noteRef(id) {
+        return db.collection('users').doc(currentUser).collection('notes').doc(id);
       }
 
       function showStatus(msg) {
         saveStatus.textContent = msg;
+        if (!msg) return;
         setTimeout(() => {
           if (saveStatus.textContent === msg) {
             saveStatus.textContent = '';
@@ -716,18 +589,93 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
         if (metaTime) metaTime.textContent = 'Last edited: ' + formatDate(note.updated);
       }
 
-      function openNote(card) {
+      function getDefaultNote(card) {
+        const defaultTitle = card.getAttribute('data-default-title') || 'Untitled note';
+        const defaultBody = card.getAttribute('data-default-body') || '';
+        return {
+          title: defaultTitle,
+          body: defaultBody,
+          updated: null
+        };
+      }
+
+      async function loadNoteForCard(card) {
+        const id = card.getAttribute('data-note-id');
+        const defaultNote = getDefaultNote(card);
+
+        try {
+          const snap = await noteRef(id).get();
+          if (!snap.exists) {
+            updateCardPreview(card, defaultNote);
+            return defaultNote;
+          }
+          const data = snap.data() || {};
+          const note = {
+            title: data.title || defaultNote.title,
+            body: data.body || defaultNote.body,
+            updated: data.updated || null
+          };
+          updateCardPreview(card, note);
+          return note;
+        } catch (err) {
+          console.error('Error loading note', id, err);
+          updateCardPreview(card, defaultNote);
+          return defaultNote;
+        }
+      }
+
+      async function openNote(card) {
         const id = card.getAttribute('data-note-id');
         currentNoteId = id;
         currentCard = card;
 
-        const note = loadNote(id, card);
+        showStatus('');
+
+        // Update label with type (Strategy, Risk, etc.)
+        if (blockLabel) {
+          const typeLabel = card.querySelector('.note-label')?.textContent || 'Playbook Block';
+          blockLabel.textContent = typeLabel;
+        }
+
+        const note = await loadNoteForCard(card);
+
         titleInput.value = note.title || '';
         bodyEl.innerText = note.body || '';
 
         overlay.classList.add('active');
-        saveStatus.textContent = '';
         titleInput.focus();
+      }
+
+      async function saveNote() {
+        if (!currentNoteId || !currentCard || isSaving) return;
+
+        const title = titleInput.value.trim() || 'Untitled note';
+        const body = bodyEl.innerText.trim();
+
+        const note = {
+          title: title,
+          body: body,
+          updated: new Date().toISOString()
+        };
+
+        try {
+          isSaving = true;
+          await noteRef(currentNoteId).set(note, { merge: true });
+          updateCardPreview(currentCard, note);
+          showStatus('Saved ✔');
+        } catch (err) {
+          console.error('Error saving note', currentNoteId, err);
+          showStatus('Error saving ❌');
+        } finally {
+          isSaving = false;
+        }
+      }
+
+      function clearNote() {
+        if (!currentNoteId || !currentCard) return;
+        titleInput.value = '';
+        bodyEl.innerText = '';
+        showStatus('Cleared (autosave will update soon)!');
       }
 
       function closeOverlay() {
@@ -736,11 +684,17 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
         currentCard = null;
       }
 
-      // INIT: load previews from storage / defaults
+      function scheduleAutosave() {
+        if (!overlay.classList.contains('active')) return;
+        clearTimeout(autosaveTimeout);
+        autosaveTimeout = setTimeout(() => {
+          saveNote();
+        }, 1200); // 1.2 seconds after last change
+      }
+
+      // INIT: load previews from Firestore or defaults
       cards.forEach(card => {
-        const id = card.getAttribute('data-note-id');
-        const note = loadNote(id, card);
-        updateCardPreview(card, note);
+        loadNoteForCard(card);
         card.addEventListener('click', () => openNote(card));
       });
 
@@ -765,6 +719,10 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
           closeOverlay();
         }
       });
+
+      // Autosave on input
+      titleInput.addEventListener('input', scheduleAutosave);
+      bodyEl.addEventListener('input', scheduleAutosave);
 
       // Optional: Ctrl+S to save when overlay is open
       document.addEventListener('keydown', (e) => {
