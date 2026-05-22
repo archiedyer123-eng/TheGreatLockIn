@@ -426,31 +426,17 @@
     <button class="bg-button" onclick="changeBackground(2)">Winter</button>
   </div>
 
-  <!-- Firebase v8 -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+ <!-- Firebase compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-app.js"></script>
+  <script src="auth.js"></script>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyA7ni6-_f9RdfkNzgxLOnjSs_4mqx6UF0w",
-      authDomain: "thegreatlockin-52959.firebaseapp.com",
-      projectId: "thegreatlockin-52959",
-      storageBucket: "thegreatlockin-52959.firebasestorage.app",
-      messagingSenderId: "182993286746",
-      appId: "1:182993286746:web:481aa971d71a25c26f0a63",
-      measurementId: "G-7B9W9HW30Q"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-  </script>
-
-  <script>
-    // --- Main App Logic ---
-    const currentUser = localStorage.getItem('currentUser');
-    if (!currentUser) {
-      window.location.href = 'login.html';
-    }
+   // --- Main App Logic ---
+    // currentUser will hold the Firebase Auth UID once auth state resolves below
+    let currentUser = null;
 
     // Background images array
     const backgrounds = [
@@ -563,9 +549,10 @@
     }
 
     // --- Date & Progress ---
-    let customTasks = JSON.parse(localStorage.getItem(currentUser + '_customTasks')) || [];
+   let customTasks = [];
     let currentDate = new Date().toISOString().split('T')[0];
-    let dateProgress = JSON.parse(localStorage.getItem(currentUser + '_dateProgress')) || {};
+    let dateProgress = {};
+    // customTasks and dateProgress are loaded from localStorage in the auth callback below
 
     // cloud sync state
     let isApplyingRemoteUpdate = false;
@@ -895,14 +882,13 @@
       fetchWeather(userLocation);
     }
 
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('currentUser');
-      window.location.href = 'login.html';
+   document.getElementById('logoutBtn').addEventListener('click', () => {
+      auth.signOut();
+      // auth.js handles the redirect to login.html
     });
 
     document.addEventListener('DOMContentLoaded', function() {
-      checkForNewDay();
-
+      // Set up main checkbox event listeners — per-user data work is in the auth callback
       const mainCheckboxes = document.querySelectorAll('#checklist input[type="checkbox"]');
       mainCheckboxes.forEach((checkbox, index) => {
         checkbox.addEventListener('change', () => {
@@ -924,10 +910,6 @@
           saveCheckboxState(index, checkbox.checked);
         });
       });
-
-      setTimeout(() => {
-        loadCheckboxStates();
-      }, 100);
     });
 
     document.getElementById('datePicker').addEventListener('change', function() {
@@ -944,23 +926,28 @@
     });
 
     // --- Initialize ---
-    customTasks.forEach((task) => addTaskToDOM(task, true, task.id));
-    setInterval(updateDateTime, 1000);
-    initializeLocationInput();
-    initializeBackground();
-    startMidnightMonitor();
+    setInterval(updateDateTime, 1000); // clock can run without auth
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function() {
-        checkForNewDay();
-        loadCheckboxStates();
-        startRealtimeSync();
-      });
-    } else {
+    // Everything below depends on a logged-in user, so wait for Firebase Auth
+    auth.onAuthStateChanged((user) => {
+      if (!user) return; // auth.js will redirect to login.html
+
+      currentUser = user.uid;
+
+      // Now load per-user data (keyed by UID)
+      customTasks = JSON.parse(localStorage.getItem(currentUser + '_customTasks')) || [];
+      dateProgress = JSON.parse(localStorage.getItem(currentUser + '_dateProgress')) || {};
+
+      // Build the UI
+      customTasks.forEach((task) => addTaskToDOM(task, true, task.id));
+      initializeLocationInput();
+      initializeBackground();
+      startMidnightMonitor();
       checkForNewDay();
       loadCheckboxStates();
       startRealtimeSync();
-    }
+    });
+    
 
     // ---- CLOUD SYNC HELPERS ----
     function getCurrentUserId() {
