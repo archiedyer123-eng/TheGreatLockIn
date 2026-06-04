@@ -16,11 +16,7 @@
       --danger: #ff4d4d;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Aptos Mono', monospace;
@@ -58,7 +54,6 @@
       color: var(--text-soft);
     }
 
-    /* 🔙 HOME BUTTON */
     .home-btn {
       position: fixed;
       top: 10px;
@@ -86,9 +81,8 @@
       box-shadow: 0 8px 22px rgba(0, 0, 0, 0.7);
     }
 
-    /* TOP 2/3 – NOTES GRID */
     .notes-section {
-      flex: 0 0 66vh; /* roughly top two thirds of the page */
+      flex: 0 0 66vh;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -175,7 +169,6 @@
       border: 1px solid var(--border-subtle);
     }
 
-    /* EXPANDED NOTE OVERLAY */
     .note-overlay {
       position: fixed;
       inset: 0;
@@ -198,7 +191,7 @@
     .note-expanded {
       width: 80vw;
       max-width: 950px;
-      height: 80vh; /* 4/5 of page-ish */
+      height: 80vh;
       background: radial-gradient(circle at top left, rgba(0, 224, 157, 0.08), #050716);
       border-radius: 18px;
       border: 1px solid var(--border-subtle);
@@ -232,6 +225,7 @@
       background: rgba(0, 0, 0, 0.3);
       color: var(--text-main);
       outline: none;
+      font-family: 'Aptos Mono', monospace;
     }
 
     .note-close-btn {
@@ -263,6 +257,7 @@
       outline: none;
       overflow-y: auto;
       white-space: pre-wrap;
+      font-family: 'Aptos Mono', monospace;
     }
 
     .note-expanded-body:empty::before {
@@ -280,9 +275,7 @@
       color: var(--text-soft);
     }
 
-    .save-status {
-      min-height: 1em;
-    }
+    .save-status { min-height: 1em; }
 
     .note-actions {
       display: flex;
@@ -300,6 +293,7 @@
       cursor: pointer;
       letter-spacing: 0.06em;
       text-transform: uppercase;
+      font-family: 'Aptos Mono', monospace;
       transition: background 0.16s ease, border-color 0.16s ease, transform 0.12s ease;
     }
 
@@ -322,7 +316,6 @@
       border-color: rgba(255, 77, 77, 0.4);
     }
 
-    /* LOWER 1/3 – RESERVED FOR LATER STUFF */
     .bottom-section {
       flex: 1;
       border-radius: 14px;
@@ -346,91 +339,64 @@
     }
 
     @media (max-width: 768px) {
-      .note-expanded {
-        width: 94vw;
-        height: 86vh;
-        padding: 12px;
-      }
-      .notes-section {
-        flex: 0 0 auto;
-        min-height: 340px;
-      }
-      body {
-        padding: 10px;
-      }
-
-      .home-btn {
-        top: 8px;
-        left: 8px;
-        padding: 6px 10px;
-        font-size: 0.7rem;
-      }
+      .note-expanded { width: 94vw; height: 86vh; padding: 12px; }
+      .notes-section { flex: 0 0 auto; min-height: 340px; }
+      body { padding: 10px; }
+      .home-btn { top: 8px; left: 8px; padding: 6px 10px; font-size: 0.7rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 🔙 HOME BUTTON -->
   <a href="index.html" class="home-btn">⬅ Home</a>
 
   <main class="trading-page">
-  <div>
-    <div class="trading-title">TRADING PLAYBOOK</div>
-    <div class="trading-subtitle">Strategies · Setups · Psychology · Risk</div>
-  </div>
-</header>
+    <div>
+      <div class="trading-title">TRADING PLAYBOOK</div>
+      <div class="trading-subtitle">Strategies · Setups · Psychology · Risk</div>
+    </div>
 
-<section class="notes-section">
-  <div class="notes-header-row" style="visibility:hidden; height:0; padding:0; margin:0;"></div>
+    <section class="notes-section">
+      <div class="notes-header-row" style="visibility:hidden; height:0; padding:0; margin:0;"></div>
 
       <div class="notes-grid">
-        <!-- CARD 1 -->
         <article class="note-card" data-note-id="note-1" data-default-title="London Session Breakout" data-default-body="Bias: Trade only in direction of HTF trend. 
 Filter: Avoid entries within 5 mins of high impact news.
 Execution: Wait for clean break + retest of Asian range.">
           <div class="note-label">Strategy</div>
           <div class="note-title">London Session Breakout</div>
-          <div class="note-preview">
-            Bias: Trade only in direction of HTF trend. Filter: Avoid entries within 5 mins of high impact news…
-          </div>
+          <div class="note-preview">Bias: Trade only in direction of HTF trend. Filter: Avoid entries within 5 mins of high impact news…</div>
           <div class="note-meta">
             <span class="note-meta-pill">FX · Session</span>
             <span>Last edited: —</span>
           </div>
         </article>
 
-        <!-- CARD 2 -->
         <article class="note-card" data-note-id="note-2" data-default-title="Risk Management Rules" data-default-body="Max risk per trade: 1R
 Max daily drawdown: 3R then stop.
 Max weekly drawdown: 6R then reduce size by 50% and review.">
           <div class="note-label">Risk</div>
           <div class="note-title">Risk Management Rules</div>
-          <div class="note-preview">
-            Max risk per trade: 1R, max daily drawdown, weekly cap and when to stop trading…
-          </div>
+          <div class="note-preview">Max risk per trade: 1R, max daily drawdown, weekly cap and when to stop trading…</div>
           <div class="note-meta">
             <span class="note-meta-pill">Account</span>
             <span>Last edited: —</span>
           </div>
         </article>
 
-        <!-- CARD 3 -->
         <article class="note-card" data-note-id="note-3" data-default-title="Trading Psychology" data-default-body="Non-negotiables:
 • No revenge trading after a loss.
 • Only trade when well-rested.
 • If emotions > 6/10, step away for 30 minutes.">
           <div class="note-label">Mindset</div>
           <div class="note-title">Trading Psychology</div>
-          <div class="note-preview">
-            Non-negotiables: no revenge trading, only trade when rested, rules for emotional tilt…
-          </div>
+          <div class="note-preview">Non-negotiables: no revenge trading, only trade when rested, rules for emotional tilt…</div>
           <div class="note-meta">
             <span class="note-meta-pill">Psych</span>
             <span>Last edited: —</span>
           </div>
         </article>
 
-        <!-- CARD 4 -->
         <article class="note-card" data-note-id="note-4" data-default-title="Journal Template" data-default-body="Template:
 • Pair / Instrument:
 • Session:
@@ -441,9 +407,7 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
 • What I'll improve next time:">
           <div class="note-label">Journal</div>
           <div class="note-title">Journal Template</div>
-          <div class="note-preview">
-            Ready-made template for writing up trades, including ‘what I did well’ and ‘improvements’…
-          </div>
+          <div class="note-preview">Ready-made template for writing up trades, including 'what I did well' and 'improvements'…</div>
           <div class="note-meta">
             <span class="note-meta-pill">Process</span>
             <span>Last edited: —</span>
@@ -452,14 +416,10 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
       </div>
     </section>
 
-    <!-- BOTTOM 1/3: RESERVED AREA -->
     <section class="bottom-section">
       <div>
         <h3>Next: Stats & Watchlist</h3>
-        <p>
-          We can use this area later for equity curve, win rate, R-multiple distribution, live watchlist, or a
-          “today’s plan” box. For now it’s just a placeholder.
-        </p>
+        <p>We can use this area later for equity curve, win rate, R-multiple distribution, live watchlist, or a "today's plan" box.</p>
       </div>
       <div>
         <p>Ideas for later:</p>
@@ -480,9 +440,7 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
         <input type="text" id="expandedTitle" class="note-expanded-title" />
         <button class="note-close-btn" id="closeNoteBtn" title="Close">&times;</button>
       </div>
-
       <div id="expandedBody" class="note-expanded-body" contenteditable="true"></div>
-
       <div class="note-expanded-footer">
         <div class="save-status" id="saveStatus"></div>
         <div class="note-actions">
@@ -493,63 +451,52 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
     </div>
   </div>
 
-  <!-- 🔥 Firebase (same project as index) -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <!-- Firebase compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-app.js"></script>
+  <script src="auth.js"></script>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyA7ni6-_f9RdfkNzgxLOnjSs_4mqx6UF0w",
-      authDomain: "thegreatlockin-52959.firebaseapp.com",
-      projectId: "thegreatlockin-52959",
-      storageBucket: "thegreatlockin-52959.firebasestorage.app",
-      messagingSenderId: "182993286746",
-      appId: "1:182993286746:web:481aa971d71a25c26f0a63",
-      measurementId: "G-7B9W9HW30Q"
-    };
-
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
-  </script>
-
-  <!-- 🧠 Firestore-backed note storage logic + autosave -->
   <script>
     (function () {
-      const overlay = document.getElementById('noteOverlay');
+      const overlay    = document.getElementById('noteOverlay');
       const titleInput = document.getElementById('expandedTitle');
-      const bodyEl = document.getElementById('expandedBody');
-      const saveBtn = document.getElementById('saveNoteBtn');
-      const clearBtn = document.getElementById('clearNoteBtn');
-      const closeBtn = document.getElementById('closeNoteBtn');
+      const bodyEl     = document.getElementById('expandedBody');
+      const saveBtn    = document.getElementById('saveNoteBtn');
+      const clearBtn   = document.getElementById('clearNoteBtn');
+      const closeBtn   = document.getElementById('closeNoteBtn');
       const saveStatus = document.getElementById('saveStatus');
-      const cards = document.querySelectorAll('.note-card');
+      const cards      = document.querySelectorAll('.note-card');
       const blockLabel = document.getElementById('noteBlockLabel');
 
-      const currentUser = localStorage.getItem('currentUser');
-      if (!currentUser) {
-        // If user not logged in, redirect to login (same behaviour as index)
-        window.location.href = 'login.html';
-        return;
-      }
-
-      let currentNoteId = null;
-      let currentCard = null;
+      let currentNoteId   = null;
+      let currentCard     = null;
       let autosaveTimeout = null;
-      let isSaving = false;
+      let isSaving        = false;
+      let currentUser     = null;
+
+      // Wait for Firebase Auth before doing anything with Firestore
+      auth.onAuthStateChanged((user) => {
+        if (!user) return; // auth.js handles redirect
+        currentUser = user.uid;
+
+        // Load all card previews once we know who the user is
+        cards.forEach(card => {
+          loadNoteForCard(card);
+          card.addEventListener('click', () => openNote(card));
+        });
+      });
 
       function noteRef(id) {
-        return db.collection('users').doc(currentUser).collection('notes').doc(id);
+        return db.collection('users').doc(currentUser).collection('tradingNotes').doc(id);
       }
 
       function showStatus(msg) {
         saveStatus.textContent = msg;
         if (!msg) return;
         setTimeout(() => {
-          if (saveStatus.textContent === msg) {
-            saveStatus.textContent = '';
-          }
+          if (saveStatus.textContent === msg) saveStatus.textContent = '';
         }, 2500);
       }
 
@@ -557,18 +504,13 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
         if (!iso) return '—';
         const d = new Date(iso);
         if (Number.isNaN(d.getTime())) return '—';
-        return d.toLocaleString(undefined, {
-          day: '2-digit',
-          month: 'short',
-          hour: '2-digit',
-          minute: '2-digit'
-        });
+        return d.toLocaleString(undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
       }
 
       function updateCardPreview(card, note) {
-        const titleEl = card.querySelector('.note-title');
+        const titleEl  = card.querySelector('.note-title');
         const previewEl = card.querySelector('.note-preview');
-        const metaTime = card.querySelector('.note-meta span:last-child');
+        const metaTime  = card.querySelector('.note-meta span:last-child');
 
         if (titleEl) titleEl.textContent = note.title || 'Untitled note';
         if (previewEl) {
@@ -581,11 +523,9 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
       }
 
       function getDefaultNote(card) {
-        const defaultTitle = card.getAttribute('data-default-title') || 'Untitled note';
-        const defaultBody = card.getAttribute('data-default-body') || '';
         return {
-          title: defaultTitle,
-          body: defaultBody,
+          title: card.getAttribute('data-default-title') || 'Untitled note',
+          body:  card.getAttribute('data-default-body') || '',
           updated: null
         };
       }
@@ -593,13 +533,9 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
       async function loadNoteForCard(card) {
         const id = card.getAttribute('data-note-id');
         const defaultNote = getDefaultNote(card);
-
         try {
           const snap = await noteRef(id).get();
-          if (!snap.exists) {
-            updateCardPreview(card, defaultNote);
-            return defaultNote;
-          }
+          if (!snap.exists) { updateCardPreview(card, defaultNote); return defaultNote; }
           const data = snap.data() || {};
           const note = {
             title: data.title || defaultNote.title,
@@ -616,36 +552,29 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
       }
 
       async function openNote(card) {
-        const id = card.getAttribute('data-note-id');
-        currentNoteId = id;
-        currentCard = card;
-
+        if (!currentUser) return;
+        currentNoteId = card.getAttribute('data-note-id');
+        currentCard   = card;
         showStatus('');
 
-        // Update label with type (Strategy, Risk, etc.)
         if (blockLabel) {
-          const typeLabel = card.querySelector('.note-label')?.textContent || 'Playbook Block';
-          blockLabel.textContent = typeLabel;
+          blockLabel.textContent = card.querySelector('.note-label')?.textContent || 'Playbook Block';
         }
 
         const note = await loadNoteForCard(card);
-
-        titleInput.value = note.title || '';
-        bodyEl.innerText = note.body || '';
+        titleInput.value  = note.title || '';
+        bodyEl.innerText  = note.body  || '';
 
         overlay.classList.add('active');
         titleInput.focus();
       }
 
       async function saveNote() {
-        if (!currentNoteId || !currentCard || isSaving) return;
-
-        const title = titleInput.value.trim() || 'Untitled note';
-        const body = bodyEl.innerText.trim();
+        if (!currentNoteId || !currentCard || isSaving || !currentUser) return;
 
         const note = {
-          title: title,
-          body: body,
+          title: titleInput.value.trim() || 'Untitled note',
+          body: bodyEl.innerText.trim(),
           updated: new Date().toISOString()
         };
 
@@ -663,68 +592,34 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
       }
 
       function clearNote() {
-        if (!currentNoteId || !currentCard) return;
         titleInput.value = '';
         bodyEl.innerText = '';
-        showStatus('Cleared (autosave will update soon)!');
+        showStatus('Cleared (autosave will update soon)');
       }
 
       function closeOverlay() {
         overlay.classList.remove('active');
         currentNoteId = null;
-        currentCard = null;
+        currentCard   = null;
       }
 
       function scheduleAutosave() {
         if (!overlay.classList.contains('active')) return;
         clearTimeout(autosaveTimeout);
-        autosaveTimeout = setTimeout(() => {
-          saveNote();
-        }, 1200); // 1.2 seconds after last change
+        autosaveTimeout = setTimeout(saveNote, 1200);
       }
 
-      // INIT: load previews from Firestore or defaults
-      cards.forEach(card => {
-        loadNoteForCard(card);
-        card.addEventListener('click', () => openNote(card));
-      });
-
-      // BUTTON HOOKS
-      saveBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        saveNote();
-      });
-
-      clearBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        clearNote();
-      });
-
-      closeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeOverlay();
-      });
-
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-          closeOverlay();
-        }
-      });
-
-      // Autosave on input
+      saveBtn.addEventListener('click',  (e) => { e.stopPropagation(); saveNote(); });
+      clearBtn.addEventListener('click', (e) => { e.stopPropagation(); clearNote(); });
+      closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeOverlay(); });
+      overlay.addEventListener('click',  (e) => { if (e.target === overlay) closeOverlay(); });
       titleInput.addEventListener('input', scheduleAutosave);
       bodyEl.addEventListener('input', scheduleAutosave);
 
-      // Optional: Ctrl+S to save when overlay is open
       document.addEventListener('keydown', (e) => {
         if (!overlay.classList.contains('active')) return;
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-          e.preventDefault();
-          saveNote();
-        }
-        if (e.key === 'Escape') {
-          closeOverlay();
-        }
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); saveNote(); }
+        if (e.key === 'Escape') closeOverlay();
       });
     })();
   </script>
