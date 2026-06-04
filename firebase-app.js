@@ -1,4 +1,7 @@
-// Firebase configuration for your project
+// firebase-app.js
+// Shared Firebase initialisation. Load this on EVERY page (after the compat SDKs).
+// Provides two globals: `db` (Firestore) and `auth` (Firebase Auth).
+
 const firebaseConfig = {
   apiKey: "AIzaSyA7ni6-_f9RdfkNzgxLOnjSs_4mqx6UF0w",
   authDomain: "thegreatlockin-52959.firebaseapp.com",
@@ -9,8 +12,9 @@ const firebaseConfig = {
   measurementId: "G-7B9W9HW30Q"
 };
 
-// ⭐ INITIALISE FIREBASE
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
-// ⭐ CONNECT TO FIRESTORE
 const db = firebase.firestore();
+const auth = firebase.auth();
