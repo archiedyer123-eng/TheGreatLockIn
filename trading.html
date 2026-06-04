@@ -385,9 +385,9 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
         </article>
 
         <article class="note-card" data-note-id="note-3" data-default-title="Trading Psychology" data-default-body="Non-negotiables:
-• No revenge trading after a loss.
-• Only trade when well-rested.
-• If emotions > 6/10, step away for 30 minutes.">
+- No revenge trading after a loss.
+- Only trade when well-rested.
+- If emotions > 6/10, step away for 30 minutes.">
           <div class="note-label">Mindset</div>
           <div class="note-title">Trading Psychology</div>
           <div class="note-preview">Non-negotiables: no revenge trading, only trade when rested, rules for emotional tilt…</div>
@@ -398,13 +398,13 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
         </article>
 
         <article class="note-card" data-note-id="note-4" data-default-title="Journal Template" data-default-body="Template:
-• Pair / Instrument:
-• Session:
-• Setup name:
-• Entry / SL / TP:
-• Screenshots:
-• What I did well:
-• What I'll improve next time:">
+- Pair / Instrument:
+- Session:
+- Setup name:
+- Entry / SL / TP:
+- Screenshots:
+- What I did well:
+- What I'll improve next time:">
           <div class="note-label">Journal</div>
           <div class="note-title">Journal Template</div>
           <div class="note-preview">Ready-made template for writing up trades, including 'what I did well' and 'improvements'…</div>
@@ -481,7 +481,6 @@ Max weekly drawdown: 6R then reduce size by 50% and review.">
         if (!user) return; // auth.js handles redirect
         currentUser = user.uid;
 
-        // Load all card previews once we know who the user is
         cards.forEach(card => {
           loadNoteForCard(card);
           card.addEventListener('click', () => openNote(card));
